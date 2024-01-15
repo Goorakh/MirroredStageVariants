@@ -4,32 +4,25 @@ using MonoMod.Cil;
 using RoR2;
 using RoR2.CameraModes;
 using System;
-using System.Linq;
 using UnityEngine;
 
 namespace MirroredStageVariants
 {
     static class InvertInputPatch
     {
-        public static void Apply()
+        [SystemInitializer]
+        static void Init()
         {
             On.RoR2.CameraModes.CameraModeBase.CollectLookInput += CameraModeBase_CollectLookInput;
 
             IL.RoR2.PlayerCharacterMasterController.Update += PlayerCharacterMasterController_Update;
         }
 
-        public static void Undo()
-        {
-            On.RoR2.CameraModes.CameraModeBase.CollectLookInput -= CameraModeBase_CollectLookInput;
-
-            IL.RoR2.PlayerCharacterMasterController.Update -= PlayerCharacterMasterController_Update;
-        }
-
         static void CameraModeBase_CollectLookInput(On.RoR2.CameraModes.CameraModeBase.orig_CollectLookInput orig, CameraModeBase self, ref CameraModeBase.CameraModeContext context, out CameraModeBase.CollectLookInputResult result)
         {
             orig(self, ref context, out result);
 
-            if (context.cameraInfo.sceneCam && context.cameraInfo.sceneCam.GetComponent<MirrorCamera>())
+            if (StageMirrorController.CurrentStageIsMirrored)
             {
                 result.lookInput.x *= -1f;
             }
@@ -53,20 +46,10 @@ namespace MirroredStageVariants
                 {
                     cursor.Index = patchIndex;
 
-                    cursor.Emit(OpCodes.Ldarg_0);
                     cursor.Emit(OpCodes.Ldloca, moveInputLocalIndex);
-                    cursor.EmitDelegate((PlayerCharacterMasterController playerController, ref Vector2 moveInput) =>
+                    cursor.EmitDelegate((ref Vector2 moveInput) =>
                     {
-                        CharacterMaster master = playerController.master;
-                        if (!master)
-                            return;
-
-                        CharacterBody body = master.GetBody();
-                        if (!body)
-                            return;
-
-                        CameraRigController cameraRigController = CameraRigController.readOnlyInstancesList.FirstOrDefault(c => c.targetBody == body);
-                        if (cameraRigController.sceneCam && cameraRigController.sceneCam.GetComponent<MirrorCamera>())
+                        if (StageMirrorController.CurrentStageIsMirrored)
                         {
                             moveInput.x *= -1f;
                         }

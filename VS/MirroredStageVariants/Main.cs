@@ -28,10 +28,6 @@ namespace MirroredStageVariants
 
             loadAssets();
 
-            On.RoR2.SceneCamera.Awake += SceneCamera_Awake;
-
-            InvertInputPatch.Apply();
-
             stopwatch.Stop();
             Log.Info_NoCallerPrefix($"Initialized in {stopwatch.Elapsed.TotalSeconds:F2} seconds");
         }
@@ -39,21 +35,6 @@ namespace MirroredStageVariants
         void OnDestroy()
         {
             Instance = SingletonHelper.Unassign(Instance, this);
-
-            On.RoR2.SceneCamera.Awake -= SceneCamera_Awake;
-
-            InvertInputPatch.Undo();
-        }
-
-        static void SceneCamera_Awake(On.RoR2.SceneCamera.orig_Awake orig, RoR2.SceneCamera self)
-        {
-            orig(self);
-
-            // TODO: use run seed
-            if (!RoR2.Run.instance || RoR2.RoR2Application.rng.nextNormalizedFloat <= 0.5f)
-            {
-                self.gameObject.AddComponent<MirrorCamera>();
-            }
         }
 
         void loadAssets()

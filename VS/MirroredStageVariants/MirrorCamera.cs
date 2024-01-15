@@ -1,14 +1,24 @@
-﻿using UnityEngine;
+﻿using RoR2;
+using UnityEngine;
 
 namespace MirroredStageVariants
 {
     class MirrorCamera : MonoBehaviour
     {
+        [SystemInitializer]
+        static void Init()
+        {
+            On.RoR2.SceneCamera.Awake += (orig, self) =>
+            {
+                orig(self);
+                self.gameObject.AddComponent<MirrorCamera>();
+            };
+        }
+
         void OnRenderImage(RenderTexture source, RenderTexture destination)
         {
             Material mirrorMaterial = Main.Instance ? Main.Instance.MirrorMaterial : null;
-
-            if (mirrorMaterial)
+            if (StageMirrorController.CurrentStageIsMirrored && mirrorMaterial)
             {
                 Graphics.Blit(source, destination, mirrorMaterial);
             }
