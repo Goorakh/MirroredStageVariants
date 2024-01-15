@@ -1,0 +1,12 @@
+﻿{
+	"name": "MirroredStageVariants",
+	"authorName": "Gorakh",
+	"displayName": "MirroredStageVariants",
+	"version_number": "1.0.0",
+	"website_url": "https://github.com/Goorakh/MirroredStageVariants",
+	"description": "TODO",
+	"dependencies": [
+		"bbepis-BepInExPack-5.4.2113",
+		"RiskofThunder-HookGenPatcher-1.2.3"
+	]
+}
