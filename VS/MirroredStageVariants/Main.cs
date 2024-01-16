@@ -28,6 +28,7 @@ namespace MirroredStageVariants
 
             loadAssets();
 
+            MirrorAudioPatch.Apply();
             InvertScreenCoordinatesPatch.Apply();
             InvertInputPatch.Apply();
 
@@ -39,6 +40,7 @@ namespace MirroredStageVariants
         {
             Instance = SingletonHelper.Unassign(Instance, this);
 
+            MirrorAudioPatch.Undo();
             InvertScreenCoordinatesPatch.Undo();
             InvertInputPatch.Undo();
         }
