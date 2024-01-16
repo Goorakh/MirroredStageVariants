@@ -28,6 +28,7 @@ namespace MirroredStageVariants
 
             loadAssets();
 
+            InvertScreenCoordinatesPatch.Apply();
             InvertInputPatch.Apply();
 
             stopwatch.Stop();
@@ -38,6 +39,7 @@ namespace MirroredStageVariants
         {
             Instance = SingletonHelper.Unassign(Instance, this);
 
+            InvertScreenCoordinatesPatch.Undo();
             InvertInputPatch.Undo();
         }
 
