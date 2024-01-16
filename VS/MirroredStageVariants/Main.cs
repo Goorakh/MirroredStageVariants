@@ -28,6 +28,8 @@ namespace MirroredStageVariants
 
             loadAssets();
 
+            InvertInputPatch.Apply();
+
             stopwatch.Stop();
             Log.Info_NoCallerPrefix($"Initialized in {stopwatch.Elapsed.TotalSeconds:F2} seconds");
         }
@@ -35,6 +37,8 @@ namespace MirroredStageVariants
         void OnDestroy()
         {
             Instance = SingletonHelper.Unassign(Instance, this);
+
+            InvertInputPatch.Undo();
         }
 
         void loadAssets()

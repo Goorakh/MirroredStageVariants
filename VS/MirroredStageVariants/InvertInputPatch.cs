@@ -10,12 +10,18 @@ namespace MirroredStageVariants
 {
     static class InvertInputPatch
     {
-        [SystemInitializer]
-        static void Init()
+        public static void Apply()
         {
             On.RoR2.CameraModes.CameraModeBase.CollectLookInput += CameraModeBase_CollectLookInput;
 
             IL.RoR2.PlayerCharacterMasterController.Update += PlayerCharacterMasterController_Update;
+        }
+
+        public static void Undo()
+        {
+            On.RoR2.CameraModes.CameraModeBase.CollectLookInput -= CameraModeBase_CollectLookInput;
+
+            IL.RoR2.PlayerCharacterMasterController.Update -= PlayerCharacterMasterController_Update;
         }
 
         static void CameraModeBase_CollectLookInput(On.RoR2.CameraModes.CameraModeBase.orig_CollectLookInput orig, CameraModeBase self, ref CameraModeBase.CameraModeContext context, out CameraModeBase.CollectLookInputResult result)
