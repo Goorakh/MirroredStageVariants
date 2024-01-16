@@ -39,11 +39,11 @@ namespace MirroredStageVariants
 
         void OnDestroy()
         {
-            Instance = SingletonHelper.Unassign(Instance, this);
-
             MirrorAudioPatch.Undo();
             InvertScreenCoordinatesPatch.Undo();
             InvertInputPatch.Undo();
+
+            Instance = SingletonHelper.Unassign(Instance, this);
         }
 
         void loadAssets()
