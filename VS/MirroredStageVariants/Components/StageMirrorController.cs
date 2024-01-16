@@ -1,7 +1,7 @@
 ﻿using RoR2;
 using UnityEngine;
 
-namespace MirroredStageVariants
+namespace MirroredStageVariants.Components
 {
     public class StageMirrorController : MonoBehaviour
     {

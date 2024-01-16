@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using MirroredStageVariants.Components;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using RoR2;

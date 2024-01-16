@@ -1,4 +1,5 @@
-﻿using MirroredStageVariants.Utils;
+﻿using MirroredStageVariants.Components;
+using MirroredStageVariants.Utils;
 using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
 using RoR2;
