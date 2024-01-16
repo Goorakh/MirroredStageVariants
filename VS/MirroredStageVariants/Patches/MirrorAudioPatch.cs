@@ -43,12 +43,6 @@ namespace MirroredStageVariants.Patches
                         return listener.transform.GlobalTransformationFromLocal(Matrix4x4.Scale(new Vector3(-1f, 1f, 1f)));
                     }
                 }
-#if DEBUG
-                else if (listeners.Count > 1)
-                {
-                    Log.Debug($"{self} has {listeners.Count} listeners, position hook cannot be used");
-                }
-#endif
             }
 
             return Matrix4x4.identity;
