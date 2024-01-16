@@ -2,7 +2,7 @@
 using RoR2;
 using UnityEngine;
 
-namespace MirroredStageVariants
+namespace MirroredStageVariants.Patches
 {
     static class InvertScreenCoordinatesPatch
     {

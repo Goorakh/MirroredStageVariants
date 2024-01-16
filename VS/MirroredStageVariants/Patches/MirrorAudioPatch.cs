@@ -5,7 +5,7 @@ using RoR2;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace MirroredStageVariants
+namespace MirroredStageVariants.Patches
 {
     static class MirrorAudioPatch
     {

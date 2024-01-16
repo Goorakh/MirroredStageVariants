@@ -6,7 +6,7 @@ using RoR2.CameraModes;
 using System;
 using UnityEngine;
 
-namespace MirroredStageVariants
+namespace MirroredStageVariants.Patches
 {
     static class InvertInputPatch
     {
