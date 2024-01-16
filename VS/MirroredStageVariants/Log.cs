@@ -14,7 +14,7 @@ namespace MirroredStageVariants
 
         static string getLogPrefix(string callerPath, string callerMemberName, int callerLineNumber)
         {
-            const string MOD_NAME = nameof(MirroredStageVariants) + @"/";
+            const string MOD_NAME = nameof(MirroredStageVariants) + @"\";
 
             int modNameLastPathIndex = callerPath.LastIndexOf(MOD_NAME);
             if (modNameLastPathIndex >= 0)
