@@ -21,7 +21,7 @@ namespace MirroredStageVariants.Components
 
         static StageMirrorController _instance;
 
-        public static bool CurrentStageIsMirrored => !_instance || _instance._isMirrored;
+        public static bool CurrentStageIsMirrored => !_instance || (Commands.OverrideStageIsMirrored ?? _instance._isMirrored);
 
         bool _isMirrored;
 
