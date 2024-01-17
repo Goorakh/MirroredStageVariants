@@ -32,6 +32,7 @@ namespace MirroredStageVariants
             MirrorAudioPatch.Apply();
             InvertScreenCoordinatesPatch.Apply();
             InvertInputPatch.Apply();
+            InvertScreenBlurPatch.Apply();
 
             stopwatch.Stop();
             Log.Info_NoCallerPrefix($"Initialized in {stopwatch.Elapsed.TotalSeconds:F2} seconds");
@@ -42,6 +43,7 @@ namespace MirroredStageVariants
             MirrorAudioPatch.Undo();
             InvertScreenCoordinatesPatch.Undo();
             InvertInputPatch.Undo();
+            InvertScreenBlurPatch.Undo();
 
             Instance = SingletonHelper.Unassign(Instance, this);
         }
