@@ -1,5 +1,4 @@
-﻿using MirroredStageVariants.Patches;
-using MirroredStageVariants.Utils;
+﻿using MirroredStageVariants.Utils;
 using RoR2;
 using System;
 using UnityEngine;
