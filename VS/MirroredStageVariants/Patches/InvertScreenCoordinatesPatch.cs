@@ -1,6 +1,6 @@
 ﻿using MirroredStageVariants.Components;
+using MirroredStageVariants.Utils;
 using MonoMod.RuntimeDetour;
-using RoR2;
 using UnityEngine;
 
 namespace MirroredStageVariants.Patches
@@ -49,26 +49,13 @@ namespace MirroredStageVariants.Patches
             return StageMirrorController.CurrentStageIsMirrored && camera.GetComponent<MirrorCamera>();
         }
 
-        static float invertScreenCoordinate(float coordinate, Rect space)
-        {
-            float leftEdge = space.xMin;
-            float rightEdge = space.xMax;
-
-            return Util.Remap(coordinate, leftEdge, rightEdge, rightEdge, leftEdge);
-        }
-
-        static void invertScreenCoordinate(ref float coordinate, Rect space)
-        {
-            coordinate = invertScreenCoordinate(coordinate, space);
-        }
-
         static Vector3 invertPixelCoordinateResult(ScreenCoordinateDelegate orig, Camera self, Vector3 position, Camera.MonoOrStereoscopicEye eye)
         {
             Vector3 result = orig(self, position, eye);
 
             if (isMirrored(self))
             {
-                invertScreenCoordinate(ref result.x, self.pixelRect);
+                CoordinateUtils.InvertScreenXCoordinate(ref result.x, self.pixelRect);
             }
 
             return result;
@@ -78,7 +65,7 @@ namespace MirroredStageVariants.Patches
         {
             if (isMirrored(self))
             {
-                invertScreenCoordinate(ref position.x, self.pixelRect);
+                CoordinateUtils.InvertScreenXCoordinate(ref position.x, self.pixelRect);
             }
 
             return orig(self, position, eye);
@@ -90,7 +77,7 @@ namespace MirroredStageVariants.Patches
 
             if (isMirrored(self))
             {
-                invertScreenCoordinate(ref result.x, self.rect);
+                CoordinateUtils.InvertScreenXCoordinate(ref result.x, self.rect);
             }
 
             return result;
@@ -100,7 +87,7 @@ namespace MirroredStageVariants.Patches
         {
             if (isMirrored(self))
             {
-                invertScreenCoordinate(ref position.x, self.rect);
+                CoordinateUtils.InvertScreenXCoordinate(ref position.x, self.rect);
             }
 
             return orig(self, position, eye);
@@ -110,7 +97,7 @@ namespace MirroredStageVariants.Patches
         {
             if (isMirrored(self))
             {
-                invertScreenCoordinate(ref pos.x, self.pixelRect);
+                CoordinateUtils.InvertScreenXCoordinate(ref pos.x, self.pixelRect);
             }
 
             return orig(self, pos, eye);
@@ -120,7 +107,7 @@ namespace MirroredStageVariants.Patches
         {
             if (isMirrored(self))
             {
-                invertScreenCoordinate(ref pos.x, self.rect);
+                CoordinateUtils.InvertScreenXCoordinate(ref pos.x, self.rect);
             }
 
             return orig(self, pos, eye);
