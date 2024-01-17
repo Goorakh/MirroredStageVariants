@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using LeTai.Asset.TranslucentImage;
 using MirroredStageVariants.Components;
+using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
@@ -35,8 +36,9 @@ namespace MirroredStageVariants.Patches
 
             if (c.TryGotoPrev(x => x.MatchCall(SymbolExtensions.GetMethodInfo(() => Graphics.Blit(default, default, default(Material), default)))))
             {
+                int temporaryTextureLocalIndex = -1;
                 if (c.TryGotoPrev(MoveType.After,
-                                  x => x.MatchLdloc(out int localIndex) && il.Body.Variables[localIndex].VariableType.Is(typeof(RenderTexture))))
+                                  x => x.MatchLdloc(out temporaryTextureLocalIndex) && il.Body.Variables[temporaryTextureLocalIndex].VariableType.Is(typeof(RenderTexture))))
                 {
                     c.EmitDelegate((RenderTexture texture) =>
                     {
@@ -57,6 +59,9 @@ namespace MirroredStageVariants.Patches
 
                         return texture;
                     });
+
+                    c.Emit(OpCodes.Dup);
+                    c.Emit(OpCodes.Stloc, temporaryTextureLocalIndex);
                 }
                 else
                 {
