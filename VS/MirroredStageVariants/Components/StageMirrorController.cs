@@ -21,7 +21,22 @@ namespace MirroredStageVariants.Components
 
         static StageMirrorController _instance;
 
-        public static bool CurrentStageIsMirrored => !_instance || (Commands.OverrideStageIsMirrored ?? _instance._isMirrored);
+        public static bool CanMirrorScene(SceneDef scene)
+        {
+            if (!scene)
+                return false;
+
+            switch (scene.cachedName)
+            {
+                case "lobby":
+                case "logbook":
+                    return false;
+            }
+
+            return true;
+        }
+
+        public static bool CurrentStageIsMirrored => CanMirrorScene(SceneCatalog.mostRecentSceneDef) && (!_instance || (Commands.OverrideStageIsMirrored ?? _instance._isMirrored));
 
         bool _isMirrored;
 
