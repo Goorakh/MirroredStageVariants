@@ -8,24 +8,29 @@ namespace MirroredStageVariants
     {
         public static bool? OverrideStageIsMirrored { get; private set; }
 
-        [ConCommand(commandName = "msv_force_all_stages_mirrored", helpText = "Sets or clears mirror override [0/1/clear]")]
+        [ConCommand(commandName = "msv_force_all", helpText = "Sets or clears mirror override [mirrored/normal/random]")]
         static void CCOverrideStageIsMirrored(ConCommandArgs args)
         {
-            args.CheckArgumentCount(1);
-
-            bool? newOverride = args.TryGetArgBool(0);
-            if (!newOverride.HasValue)
+            if (args.Count < 1)
             {
-                string argString = args.GetArgString(0);
-                if (string.Equals(argString, bool.TrueString, StringComparison.OrdinalIgnoreCase))
+                if (OverrideStageIsMirrored.HasValue)
                 {
-                    newOverride = true;
+                    Debug.Log($"All stages forced {(OverrideStageIsMirrored.Value ? "mirrored" : "normal")}");
                 }
-                else if (string.Equals(argString, bool.FalseString, StringComparison.OrdinalIgnoreCase))
+                else
                 {
-                    newOverride = false;
+                    Debug.Log("No active override");
                 }
+
+                return;
             }
+
+            bool? newOverride = args.GetArgString(0).ToLower() switch
+            {
+                "mirrored" or "mirror" => true,
+                "normal" => false,
+                "random" or _ => null
+            };
 
             if (OverrideStageIsMirrored != newOverride)
             {
@@ -33,7 +38,7 @@ namespace MirroredStageVariants
 
                 if (OverrideStageIsMirrored.HasValue)
                 {
-                    Debug.Log($"All stages mirrored forced {(OverrideStageIsMirrored.Value ? "enabled" : "disabled")}");
+                    Debug.Log($"All stages forced {(OverrideStageIsMirrored.Value ? "mirrored" : "normal")}");
                 }
                 else
                 {
