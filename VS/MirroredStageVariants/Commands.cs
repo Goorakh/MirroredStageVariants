@@ -27,9 +27,9 @@ namespace MirroredStageVariants
 
             bool? newOverride = args.GetArgString(0).ToLower() switch
             {
-                "mirrored" or "mirror" => true,
-                "normal" => false,
-                "random" or _ => null
+                "mirrored" or "mirror" or "m" => true,
+                "normal" or "n" => false,
+                "random" or "r" or _ => null
             };
 
             if (OverrideStageIsMirrored != newOverride)
