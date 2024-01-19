@@ -22,6 +22,8 @@ namespace MirroredStageVariants
 
         public Shader SwapRectsShader { get; private set; }
 
+        public Shader MirrorOverlayShader { get; private set; }
+
 #if DEBUG
         public Material DebugDrawUV { get; private set; }
 #endif
@@ -82,6 +84,7 @@ namespace MirroredStageVariants
 
             MirrorMaterial = assetBundle.LoadAsset<Material>("Mirror");
             SwapRectsShader = assetBundle.LoadAsset<Shader>("SwapRects");
+            MirrorOverlayShader = assetBundle.LoadAsset<Shader>("MirrorOverlay");
 
 #if DEBUG
             DebugDrawUV = assetBundle.LoadAsset<Material>("DebugDrawUV");

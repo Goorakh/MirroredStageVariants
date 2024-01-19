@@ -66,12 +66,10 @@
                     if (isInRect(inputUV, rectA, _SwapSizes[i]))
                     {
                         inputUV += rectB - rectA;
-                        break;
                     }
                     else if (isInRect(inputUV, rectB, _SwapSizes[i]))
                     {
                         inputUV += rectA - rectB;
-                        break;
                     }
                 }
                 

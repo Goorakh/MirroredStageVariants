@@ -1,7 +1,10 @@
-﻿using HG;
+﻿#if DEBUG && false
+#define USE_POSITION_SWAP
+#endif
+
+using HG;
 using MirroredStageVariants.Utils;
 using RoR2;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -80,7 +83,7 @@ namespace MirroredStageVariants.Components
                 {
                     PositionA = CoordinateUtils.Remap(screenPoint, cameraPixelRect, cameraRect),
                     PositionB = CoordinateUtils.Remap(flippedScreenPoint, cameraPixelRect, cameraRect),
-                    Size = CoordinateUtils.Remap(new Vector2(50f, 20f), cameraPixelRect, cameraRect)
+                    Size = CoordinateUtils.Remap(new Vector2(75f, 30f), cameraPixelRect, cameraRect)
                 });
             }
 
@@ -121,7 +124,9 @@ namespace MirroredStageVariants.Components
 
             ApplyUVPositionSwaps manualRenderUVPositionSwaps = cam.GetComponent<ApplyUVPositionSwaps>() ?? cam.gameObject.AddComponent<ApplyUVPositionSwaps>();
 
+#if USE_POSITION_SWAP
             manualRenderUVPositionSwaps.SetSwapPositions(getParticleSwapInfos(cam));
+#endif
 
             if (manualRenderUVPositionSwaps.Material)
             {
@@ -144,6 +149,13 @@ namespace MirroredStageVariants.Components
 
         class ApplyUVPositionSwaps : MonoBehaviour
         {
+            static readonly int _overlayTexShaderID =
+#if USE_POSITION_SWAP
+                CommonShaderIDs._InputTex;
+#else
+                CommonShaderIDs._OverlayTex;
+#endif
+
             public struct SwapInfo
             {
                 public Vector2 PositionA;
@@ -161,6 +173,20 @@ namespace MirroredStageVariants.Components
             {
                 Camera = GetComponent<Camera>();
                 updateRenderTexture();
+
+#if !USE_POSITION_SWAP
+                Shader mirrorOverlay = Main.Instance ? Main.Instance.MirrorOverlayShader : null;
+
+                if (mirrorOverlay)
+                {
+                    Material = new Material(mirrorOverlay);
+
+                    if (InputTexture)
+                    {
+                        Material.SetTexture(_overlayTexShaderID, InputTexture);
+                    }
+                }
+#endif
             }
 
             void updateRenderTexture()
@@ -186,7 +212,7 @@ namespace MirroredStageVariants.Components
 
                     if (Material)
                     {
-                        Material.SetTexture(CommonShaderIDs._InputTex, InputTexture);
+                        Material.SetTexture(_overlayTexShaderID, InputTexture);
                     }
                 }
             }
@@ -208,7 +234,7 @@ namespace MirroredStageVariants.Components
 
                     if (InputTexture)
                     {
-                        Material.SetTexture(CommonShaderIDs._InputTex, InputTexture);
+                        Material.SetTexture(_overlayTexShaderID, InputTexture);
                     }
                 }
 
