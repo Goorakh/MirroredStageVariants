@@ -1,4 +1,5 @@
 using BepInEx;
+using HG.Reflection;
 using MirroredStageVariants.Patches;
 using System;
 using System.Diagnostics;
@@ -19,6 +20,12 @@ namespace MirroredStageVariants
 
         public Material MirrorMaterial { get; private set; }
 
+        public Shader SwapRectsShader { get; private set; }
+
+#if DEBUG
+        public Material DebugDrawUV { get; private set; }
+#endif
+
         void Awake()
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
@@ -33,6 +40,7 @@ namespace MirroredStageVariants
             InvertScreenCoordinatesPatch.Apply();
             InvertInputPatch.Apply();
             InvertScreenBlurPatch.Apply();
+            InvertDamageNumberPositionsPatch.Apply();
 
             stopwatch.Stop();
             Log.Info_NoCallerPrefix($"Initialized in {stopwatch.Elapsed.TotalSeconds:F2} seconds");
@@ -44,6 +52,7 @@ namespace MirroredStageVariants
             InvertScreenCoordinatesPatch.Undo();
             InvertInputPatch.Undo();
             InvertScreenBlurPatch.Undo();
+            InvertDamageNumberPositionsPatch.Undo();
 
             Instance = SingletonHelper.Unassign(Instance, this);
         }
@@ -72,6 +81,11 @@ namespace MirroredStageVariants
                 return;
 
             MirrorMaterial = assetBundle.LoadAsset<Material>("Mirror");
+            SwapRectsShader = assetBundle.LoadAsset<Shader>("SwapRects");
+
+#if DEBUG
+            DebugDrawUV = assetBundle.LoadAsset<Material>("DebugDrawUV");
+#endif
         }
     }
 }

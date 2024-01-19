@@ -9,15 +9,6 @@ namespace MirroredStageVariants.Components
     [DisallowMultipleComponent]
     public class InvertScreenCoordinatesOnRender : MonoBehaviour
     {
-        static event Camera.CameraCallback onPreCullEvent;
-        static event Camera.CameraCallback onPostRenderEvent;
-
-        static InvertScreenCoordinatesOnRender()
-        {
-            Camera.onPreCull = (Camera.CameraCallback)Delegate.Combine(Camera.onPreCull, (Camera.CameraCallback)((Camera cam) => onPreCullEvent?.Invoke(cam)));
-            Camera.onPostRender = (Camera.CameraCallback)Delegate.Combine(Camera.onPreCull, (Camera.CameraCallback)((Camera cam) => onPostRenderEvent?.Invoke(cam)));
-        }
-
         [SystemInitializer]
         static void Init()
         {
@@ -67,44 +58,16 @@ namespace MirroredStageVariants.Components
 
         void OnEnable()
         {
-            onPreCullEvent += onPreCull;
-            onPostRenderEvent += onPostRender;
+            CameraEvents.OnPreCull += onPreCull;
+            CameraEvents.OnPostRender += onPostRender;
         }
 
         void OnDisable()
         {
             restorePreRenderPosition();
 
-            onPreCullEvent -= onPreCull;
-            onPostRenderEvent -= onPostRender;
-        }
-
-        bool rendersThisObjectAsMirrored(Camera camera)
-        {
-            if (StageMirrorController.CurrentStageIsMirrored && (camera.cullingMask & (1 << gameObject.layer)) != 0)
-            {
-                if (camera.GetComponent<MirrorCamera>())
-                {
-                    return true;
-                }
-
-                CameraRigController cameraRigController;
-                if (camera.TryGetComponent(out UICamera uiCamera))
-                {
-                    cameraRigController = uiCamera.cameraRigController;
-                }
-                else
-                {
-                    cameraRigController = camera.GetComponentInParent<CameraRigController>();
-                }
-
-                if (cameraRigController && cameraRigController.sceneCam && cameraRigController.sceneCam.GetComponent<MirrorCamera>())
-                {
-                    return true;
-                }
-            }
-
-            return false;
+            CameraEvents.OnPreCull -= onPreCull;
+            CameraEvents.OnPostRender -= onPostRender;
         }
 
         void storePreRenderPosition()
@@ -122,7 +85,7 @@ namespace MirroredStageVariants.Components
 
         void onPreCull(Camera camera)
         {
-            if (!rendersThisObjectAsMirrored(camera))
+            if (!camera.ShouldRenderObjectAsMirrored(gameObject))
                 return;
 
             if (_currentRenderingCamera)
