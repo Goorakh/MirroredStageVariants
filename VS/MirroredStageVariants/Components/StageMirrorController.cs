@@ -36,7 +36,7 @@ namespace MirroredStageVariants.Components
             return true;
         }
 
-        public static bool CurrentStageIsMirrored => CanMirrorScene(SceneCatalog.mostRecentSceneDef) && (!_instance || (Commands.OverrideStageIsMirrored ?? _instance._isMirrored));
+        public static bool CurrentlyIsMirrored => CanMirrorScene(SceneCatalog.mostRecentSceneDef) && (!_instance || (Commands.OverrideStageIsMirrored ?? _instance._isMirrored));
 
         bool _isMirrored;
 

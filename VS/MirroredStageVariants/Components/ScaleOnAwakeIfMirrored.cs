@@ -9,7 +9,7 @@ namespace MirroredStageVariants.Components
 
         void Awake()
         {
-            if (StageMirrorController.CurrentStageIsMirrored)
+            if (StageMirrorController.CurrentlyIsMirrored)
             {
                 transform.localScale = Vector3.Scale(transform.localScale, ScaleMultiplier);
             }

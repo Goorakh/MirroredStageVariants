@@ -8,7 +8,7 @@ namespace MirroredStageVariants.Utils
     {
         public static bool ShouldRenderObjectAsMirrored(this Camera camera, GameObject obj)
         {
-            if (StageMirrorController.CurrentStageIsMirrored && (camera.cullingMask & (1 << obj.layer)) != 0)
+            if (StageMirrorController.CurrentlyIsMirrored && (camera.cullingMask & (1 << obj.layer)) != 0)
             {
                 if (camera.GetComponent<MirrorCamera>())
                 {

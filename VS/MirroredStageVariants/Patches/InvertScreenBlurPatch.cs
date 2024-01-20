@@ -42,7 +42,7 @@ namespace MirroredStageVariants.Patches
                 {
                     c.EmitDelegate((RenderTexture texture) =>
                     {
-                        if (StageMirrorController.CurrentStageIsMirrored)
+                        if (StageMirrorController.CurrentlyIsMirrored)
                         {
                             Material mirrorMaterial = Main.Instance ? Main.Instance.MirrorMaterial : null;
                             if (mirrorMaterial)

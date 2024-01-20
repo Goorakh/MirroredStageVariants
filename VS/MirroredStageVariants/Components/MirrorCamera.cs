@@ -18,7 +18,7 @@ namespace MirroredStageVariants.Components
         void OnRenderImage(RenderTexture source, RenderTexture destination)
         {
             Material mirrorMaterial = Main.Instance ? Main.Instance.MirrorMaterial : null;
-            if (StageMirrorController.CurrentStageIsMirrored && mirrorMaterial)
+            if (StageMirrorController.CurrentlyIsMirrored && mirrorMaterial)
             {
                 Graphics.Blit(source, destination, mirrorMaterial);
             }

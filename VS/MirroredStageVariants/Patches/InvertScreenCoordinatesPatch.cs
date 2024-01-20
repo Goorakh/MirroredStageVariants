@@ -46,7 +46,7 @@ namespace MirroredStageVariants.Patches
 
         static bool isMirrored(Camera camera)
         {
-            return StageMirrorController.CurrentStageIsMirrored && camera.GetComponent<MirrorCamera>();
+            return StageMirrorController.CurrentlyIsMirrored && camera.GetComponent<MirrorCamera>();
         }
 
         static Vector3 invertPixelCoordinateResult(ScreenCoordinateDelegate orig, Camera self, Vector3 position, Camera.MonoOrStereoscopicEye eye)

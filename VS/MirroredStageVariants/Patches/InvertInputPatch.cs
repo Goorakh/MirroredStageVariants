@@ -29,7 +29,7 @@ namespace MirroredStageVariants.Patches
         {
             orig(self, ref context, out result);
 
-            if (StageMirrorController.CurrentStageIsMirrored)
+            if (StageMirrorController.CurrentlyIsMirrored)
             {
                 result.lookInput.x *= -1f;
             }
@@ -56,7 +56,7 @@ namespace MirroredStageVariants.Patches
                     cursor.Emit(OpCodes.Ldloca, moveInputLocalIndex);
                     cursor.EmitDelegate((ref Vector2 moveInput) =>
                     {
-                        if (StageMirrorController.CurrentStageIsMirrored)
+                        if (StageMirrorController.CurrentlyIsMirrored)
                         {
                             moveInput.x *= -1f;
                         }

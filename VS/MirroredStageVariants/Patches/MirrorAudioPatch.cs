@@ -32,7 +32,7 @@ namespace MirroredStageVariants.Patches
 
         static Matrix4x4 getSoundEmitterMirrorTransformation(AkGameObj self)
         {
-            if (StageMirrorController.CurrentStageIsMirrored)
+            if (StageMirrorController.CurrentlyIsMirrored)
             {
                 List<AkAudioListener> listeners = self.IsUsingDefaultListeners ? AkAudioListener.DefaultListeners.ListenerList : self.ListenerList;
                 if (listeners.Count == 1)
