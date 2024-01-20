@@ -36,7 +36,22 @@ namespace MirroredStageVariants.Components
             return true;
         }
 
-        public static bool CurrentlyIsMirrored => CanMirrorScene(SceneCatalog.mostRecentSceneDef) && (!_instance || (Commands.OverrideStageIsMirrored ?? _instance._isMirrored));
+        public static bool CurrentlyIsMirrored
+        {
+            get
+            {
+                if (!CanMirrorScene(SceneCatalog.mostRecentSceneDef))
+                    return false;
+
+                if (!_instance)
+                    return Main.MirrorNonStages.Value;
+
+                if (Commands.OverrideStageIsMirrored.HasValue)
+                    return Commands.OverrideStageIsMirrored.Value;
+
+                return _instance._isMirrored;
+            }
+        }
 
         bool _isMirrored;
 
@@ -52,7 +67,7 @@ namespace MirroredStageVariants.Components
 
         void Awake()
         {
-            _isMirrored = RoR2Application.rng.nextNormalizedFloat <= 0.5f;
+            _isMirrored = RoR2Application.rng.nextNormalizedFloat <= Main.MirrorChance.Value / 100f;
 
 #if DEBUG
             Log.Debug($"mirrored={_isMirrored}");

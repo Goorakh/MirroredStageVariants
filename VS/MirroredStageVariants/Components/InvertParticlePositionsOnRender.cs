@@ -1,10 +1,7 @@
-﻿#if DEBUG && false
-#define USE_POSITION_SWAP
-#endif
-
-using HG;
+﻿using HG;
 using MirroredStageVariants.Utils;
 using RoR2;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -13,6 +10,14 @@ namespace MirroredStageVariants.Components
     [DisallowMultipleComponent]
     public class InvertParticlePositionsOnRender : MonoBehaviour
     {
+        public enum InvertMode
+        {
+            Mirror,
+            FlipPosition,
+            DontMirror,
+            DontRender
+        }
+
         static ParticleSystem.Particle[] _particlesBuffer = [];
 
         static Camera _manualRenderCamera;
@@ -25,6 +30,27 @@ namespace MirroredStageVariants.Components
             _manualRenderCamera = manualRenderCameraObject.AddComponent<Camera>();
             _manualRenderCamera.enabled = false;
         }
+
+        InvertMode _mode = InvertMode.DontRender;
+        public InvertMode Mode
+        {
+            get
+            {
+                return _mode;
+            }
+            set
+            {
+                if (_mode == value)
+                    return;
+
+                _mode = value;
+
+                removeAllInvertAppliers();
+                enabled = _mode != InvertMode.DontMirror;
+            }
+        }
+
+        readonly List<ApplyInvertShader> _ownedInvertAppliers = [];
 
         ParticleSystem _particleSystem;
 
@@ -52,9 +78,22 @@ namespace MirroredStageVariants.Components
                 gameObject.layer = _originalLayer;
                 _currentRenderingCamera = null;
             }
+
+            removeAllInvertAppliers();
         }
 
-        ApplyUVPositionSwaps.SwapInfo[] getParticleSwapInfos(Camera cam)
+        void removeAllInvertAppliers()
+        {
+            foreach (ApplyInvertShader applyInvertShader in _ownedInvertAppliers)
+            {
+                applyInvertShader.Owner = null;
+                Destroy(applyInvertShader);
+            }
+
+            _ownedInvertAppliers.Clear();
+        }
+
+        ScreenPositionSwapInfo[] getParticleSwapInfos(Camera cam)
         {
             if (!_particleSystem)
                 return [];
@@ -67,7 +106,7 @@ namespace MirroredStageVariants.Components
             Rect cameraRect = cam.rect;
             Rect cameraPixelRect = cam.pixelRect;
 
-            List<ApplyUVPositionSwaps.SwapInfo> swaps = [];
+            List<ScreenPositionSwapInfo> swaps = [];
             for (int i = 0; i < particleCount; i++)
             {
                 ParticleSystem.Particle particle = _particlesBuffer[i];
@@ -79,7 +118,7 @@ namespace MirroredStageVariants.Components
                 Vector3 flippedScreenPoint = screenPoint;
                 flippedScreenPoint.x = CoordinateUtils.GetInvertedScreenXCoordinate(flippedScreenPoint.x, cameraPixelRect);
 
-                swaps.Add(new ApplyUVPositionSwaps.SwapInfo
+                swaps.Add(new ScreenPositionSwapInfo
                 {
                     PositionA = CoordinateUtils.Remap(screenPoint, cameraPixelRect, cameraRect),
                     PositionB = CoordinateUtils.Remap(flippedScreenPoint, cameraPixelRect, cameraRect),
@@ -122,14 +161,21 @@ namespace MirroredStageVariants.Components
             if (_currentRenderingCamera != cam)
                 return;
 
-            ApplyUVPositionSwaps manualRenderUVPositionSwaps = cam.GetComponent<ApplyUVPositionSwaps>() ?? cam.gameObject.AddComponent<ApplyUVPositionSwaps>();
-
-#if USE_POSITION_SWAP
-            manualRenderUVPositionSwaps.SetSwapPositions(getParticleSwapInfos(cam));
-#endif
-
-            if (manualRenderUVPositionSwaps.Material)
+            if (Mode != InvertMode.DontRender)
             {
+                ApplyInvertShader applyInvertShader = _ownedInvertAppliers.Find(a => a.Camera == cam);
+                if (!applyInvertShader)
+                {
+                    applyInvertShader = cam.gameObject.AddComponent<ApplyInvertShader>();
+                    applyInvertShader.Owner = this;
+                    _ownedInvertAppliers.Add(applyInvertShader);
+                }
+
+                if (Mode == InvertMode.FlipPosition)
+                {
+                    applyInvertShader.SetSwapPositions(getParticleSwapInfos(cam));
+                }
+
                 _manualRenderCamera.CopyFrom(cam);
                 _manualRenderCamera.transform.position = cam.transform.position;
                 _manualRenderCamera.transform.rotation = cam.transform.rotation;
@@ -138,7 +184,7 @@ namespace MirroredStageVariants.Components
                 _manualRenderCamera.clearFlags = CameraClearFlags.Color;
                 _manualRenderCamera.backgroundColor = Color.clear;
 
-                _manualRenderCamera.targetTexture = manualRenderUVPositionSwaps.InputTexture;
+                _manualRenderCamera.targetTexture = applyInvertShader.TargetTexture;
                 _manualRenderCamera.Render();
             }
 
@@ -147,72 +193,91 @@ namespace MirroredStageVariants.Components
             _currentRenderingCamera = null;
         }
 
-        class ApplyUVPositionSwaps : MonoBehaviour
+        public struct ScreenPositionSwapInfo
         {
-            static readonly int _overlayTexShaderID =
-#if USE_POSITION_SWAP
-                CommonShaderIDs._InputTex;
-#else
-                CommonShaderIDs._OverlayTex;
-#endif
+            public Vector2 PositionA;
+            public Vector2 PositionB;
 
-            public struct SwapInfo
+            public Vector2 Size;
+        }
+
+        class ApplyInvertShader : MonoBehaviour
+        {
+            public InvertParticlePositionsOnRender Owner;
+
+            public int InputTextureShaderID => Owner.Mode switch
             {
-                public Vector2 PositionA;
-                public Vector2 PositionB;
-
-                public Vector2 Size;
-            }
+                InvertMode.Mirror => CommonShaderIDs._OverlayTex,
+                InvertMode.FlipPosition => CommonShaderIDs._InputTex,
+                _ => throw new NotImplementedException(),
+            };
 
             public Camera Camera { get; private set; }
 
-            public RenderTexture InputTexture { get; private set; }
+            public RenderTexture TargetTexture { get; private set; }
             public Material Material { get; private set; }
 
             void Awake()
             {
                 Camera = GetComponent<Camera>();
                 updateRenderTexture();
+            }
 
-#if !USE_POSITION_SWAP
-                Shader mirrorOverlay = Main.Instance ? Main.Instance.MirrorOverlayShader : null;
-
-                if (mirrorOverlay)
+            void Start()
+            {
+                if (Owner)
                 {
-                    Material = new Material(mirrorOverlay);
-
-                    if (InputTexture)
+                    switch (Owner.Mode)
                     {
-                        Material.SetTexture(_overlayTexShaderID, InputTexture);
+                        case InvertMode.Mirror:
+                            Shader mirrorOverlay = Main.Instance ? Main.Instance.MirrorOverlayShader : null;
+                            if (mirrorOverlay)
+                            {
+                                Material = new Material(mirrorOverlay);
+                            }
+
+                            break;
+                        case InvertMode.FlipPosition:
+                            Shader flipPositionsShader = Main.Instance ? Main.Instance.SwapRectsShader : null;
+                            if (flipPositionsShader)
+                            {
+                                Material = new Material(flipPositionsShader);
+                            }
+
+                            break;
+                    }
+
+                    if (Material && TargetTexture)
+                    {
+                        Material.SetTexture(InputTextureShaderID, TargetTexture);
                     }
                 }
-#endif
             }
 
             void updateRenderTexture()
             {
-                if (InputTexture)
+                if (TargetTexture)
                 {
-                    if (Camera && InputTexture.width == Camera.pixelWidth && InputTexture.height == Camera.pixelHeight)
+                    if (Camera && TargetTexture.width == Camera.pixelWidth && TargetTexture.height == Camera.pixelHeight)
                         return;
 
-                    RenderTexture.ReleaseTemporary(InputTexture);
-                    InputTexture = null;
+                    RenderTexture.ReleaseTemporary(TargetTexture);
+                    TargetTexture = null;
                 }
 
                 if (Camera)
                 {
-                    InputTexture = RenderTexture.GetTemporary(new RenderTextureDescriptor(Camera.pixelWidth, Camera.pixelHeight, RenderTextureFormat.ARGB32)
+                    TargetTexture = RenderTexture.GetTemporary(new RenderTextureDescriptor(Camera.pixelWidth, Camera.pixelHeight, RenderTextureFormat.ARGB32)
                     {
                         sRGB = true,
                         useMipMap = false
                     });
 
-                    InputTexture.filterMode = FilterMode.Bilinear;
+                    TargetTexture.filterMode = FilterMode.Bilinear;
 
                     if (Material)
                     {
-                        Material.SetTexture(_overlayTexShaderID, InputTexture);
+                        Material.SetTexture(InputTextureShaderID, TargetTexture);
                     }
                 }
             }
@@ -220,23 +285,17 @@ namespace MirroredStageVariants.Components
             void FixedUpdate()
             {
                 updateRenderTexture();
+
+                if (!Owner)
+                {
+                    Destroy(this);
+                }
             }
 
-            public void SetSwapPositions(SwapInfo[] swaps)
+            public void SetSwapPositions(ScreenPositionSwapInfo[] swaps)
             {
                 if (!Material)
-                {
-                    Shader shader = Main.Instance ? Main.Instance.SwapRectsShader : null;
-                    if (!shader)
-                        return;
-
-                    Material = new Material(shader);
-
-                    if (InputTexture)
-                    {
-                        Material.SetTexture(_overlayTexShaderID, InputTexture);
-                    }
-                }
+                    return;
 
                 const int SWAP_POSITIONS_MAX_SIZE = 100;
 
@@ -247,7 +306,7 @@ namespace MirroredStageVariants.Components
 
                 for (int i = 0; i < swapCount; i++)
                 {
-                    SwapInfo swapInfo = swaps[i];
+                    ScreenPositionSwapInfo swapInfo = swaps[i];
 
                     swapPositions[i] = new Vector4(swapInfo.PositionA.x, swapInfo.PositionA.y, swapInfo.PositionB.x, swapInfo.PositionB.y);
                     swapSizes[i] = swapInfo.Size;
@@ -265,9 +324,9 @@ namespace MirroredStageVariants.Components
                     Destroy(Material);
                 }
 
-                if (InputTexture)
+                if (TargetTexture)
                 {
-                    RenderTexture.ReleaseTemporary(InputTexture);
+                    RenderTexture.ReleaseTemporary(TargetTexture);
                 }
             }
 
