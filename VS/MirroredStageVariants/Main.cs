@@ -54,6 +54,7 @@ namespace MirroredStageVariants
             InvertInputPatch.Apply();
             InvertScreenBlurPatch.Apply();
             InvertDamageNumberPositionsPatch.Apply();
+            InvertTypewriteTextControllerPatch.Apply();
 
             stopwatch.Stop();
             Log.Info_NoCallerPrefix($"Initialized in {stopwatch.Elapsed.TotalSeconds:F2} seconds");
@@ -66,6 +67,7 @@ namespace MirroredStageVariants
             InvertInputPatch.Undo();
             InvertScreenBlurPatch.Undo();
             InvertDamageNumberPositionsPatch.Undo();
+            InvertTypewriteTextControllerPatch.Undo();
 
             Instance = SingletonHelper.Unassign(Instance, this);
         }
