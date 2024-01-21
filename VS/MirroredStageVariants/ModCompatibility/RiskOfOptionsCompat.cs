@@ -25,8 +25,6 @@ namespace MirroredStageVariants.ModCompatibility
             }), MOD_GUID, MOD_NAME);
 
             ModSettingsManager.AddOption(new CheckBoxOption(Main.MirrorNonStages), MOD_GUID, MOD_NAME);
-
-            ModSettingsManager.AddOption(new ChoiceOption(Main.DamageNumberInvertMode), MOD_GUID, MOD_NAME);
         }
     }
 }

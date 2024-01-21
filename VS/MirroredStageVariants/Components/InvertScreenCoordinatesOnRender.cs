@@ -37,7 +37,14 @@ namespace MirroredStageVariants.Components
 
                 foreach (Transform root in rootUIWorldSpaceObjects)
                 {
-                    root.gameObject.AddComponent<InvertScreenCoordinatesOnRender>();
+                    if (root.GetComponent<ParticleSystemRenderer>())
+                    {
+                        root.gameObject.AddComponent<InvertParticlePositionsOnRender>();
+                    }
+                    else
+                    {
+                        root.gameObject.AddComponent<InvertScreenCoordinatesOnRender>();
+                    }
 
 #if DEBUG
                     Log.Debug($"Added component to {Util.BuildPrefabTransformPath(effect.prefab.transform, root, false, true)} ({i})");

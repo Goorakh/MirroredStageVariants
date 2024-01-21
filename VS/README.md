@@ -17,12 +17,9 @@ Adds more variety to stages by occasionaly mirroring them (50/50 chance by defau
 
 ## Known issues (eg. May be fixed in future updates, if I can be bothered)
 
-### Damage Numbers
-Damage numbers do not render properly when mirrored, there are several flawed "solutions" in the mod you can pick from in the config. I will try to fix them properly but I have absolutely no idea how to do that, if you have any leads/experience in the field feel free to contact me (details below) :)
-
 ### Multiplayer
 The mirrored state is not syncronized between players in multiplayer, each player rolls their mirror chance individually.
 
 ## Contact
 
-If you have found a bug, or possess the lost knowledge of how the hell to modify the damage numbers, please open a [GitHub issue](https://github.com/Goorakh/MirroredStageVariants/issues/new) or DM me on Discord (@gorakh/Gorakh#0821)
+If you have found a bug, or need any other reason to contact me, please open a [GitHub issue](https://github.com/Goorakh/MirroredStageVariants/issues/new) or DM me on Discord (@gorakh/Gorakh#0821)
