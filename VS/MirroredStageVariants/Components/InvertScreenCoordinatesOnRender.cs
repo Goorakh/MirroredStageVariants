@@ -1,54 +1,47 @@
 ﻿using MirroredStageVariants.Utils;
 using RoR2;
-using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 
 namespace MirroredStageVariants.Components
 {
     [DisallowMultipleComponent]
     public class InvertScreenCoordinatesOnRender : MonoBehaviour
     {
-        [SystemInitializer]
+        [SystemInitializer(typeof(EffectCatalog))]
         static void Init()
         {
+            for (EffectIndex i = 0; i < (EffectIndex)EffectCatalog.effectCount; i++)
             {
-                GameObject bearProcEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Bear/BearProc.prefab").WaitForCompletion();
-                if (bearProcEffect)
-                {
-                    Transform textRoot = bearProcEffect.transform.Find("TextCamScaler");
-                    if (textRoot)
-                    {
-                        textRoot.gameObject.AddComponent<InvertScreenCoordinatesOnRender>();
-                    }
-                    else
-                    {
-                        Log.Error($"Failed to find {bearProcEffect} text root");
-                    }
-                }
-                else
-                {
-                    Log.Error($"Failed to load bear proc effect");
-                }
-            }
+                EffectDef effect = EffectCatalog.GetEffectDef(i);
 
-            {
-                GameObject bearVoidProcEffect = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/BearVoid/BearVoidProc.prefab").WaitForCompletion();
-                if (bearVoidProcEffect)
+                List<Transform> rootUIWorldSpaceObjects = [];
+
+                foreach (Transform uiWorldSpaceObject in effect.prefab.transform.GetAllChildrenRecursive()
+                                                                                .Where(t => t.gameObject.layer == LayerIndex.uiWorldSpace.intVal))
                 {
-                    Transform textRoot = bearVoidProcEffect.transform.Find("TextCamScaler");
-                    if (textRoot)
+                    if (!rootUIWorldSpaceObjects.Exists(uiWorldSpaceObject.IsChildOf))
                     {
-                        textRoot.gameObject.AddComponent<InvertScreenCoordinatesOnRender>();
-                    }
-                    else
-                    {
-                        Log.Error($"Failed to find {bearVoidProcEffect} text root");
+                        for (int j = rootUIWorldSpaceObjects.Count - 1; j >= 0; j--)
+                        {
+                            if (rootUIWorldSpaceObjects[j].IsChildOf(uiWorldSpaceObject))
+                            {
+                                rootUIWorldSpaceObjects.RemoveAt(j);
+                            }
+                        }
+
+                        rootUIWorldSpaceObjects.Add(uiWorldSpaceObject);
                     }
                 }
-                else
+
+                foreach (Transform root in rootUIWorldSpaceObjects)
                 {
-                    Log.Error($"Failed to load void bear proc effect");
+                    root.gameObject.AddComponent<InvertScreenCoordinatesOnRender>();
+
+#if DEBUG
+                    Log.Debug($"Added component to {Util.BuildPrefabTransformPath(effect.prefab.transform, root, false, true)} ({i})");
+#endif
                 }
             }
         }
