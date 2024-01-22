@@ -15,11 +15,17 @@ namespace MirroredStageVariants.Components
             for (EffectIndex i = 0; i < (EffectIndex)EffectCatalog.effectCount; i++)
             {
                 EffectDef effect = EffectCatalog.GetEffectDef(i);
+                if (effect is null)
+                    continue;
+
+                GameObject effectPrefab = effect.prefab;
+                if (!effectPrefab)
+                    continue;
 
                 List<Transform> rootUIWorldSpaceObjects = [];
 
-                foreach (Transform uiWorldSpaceObject in effect.prefab.transform.GetAllChildrenRecursive()
-                                                                                .Where(t => t.gameObject.layer == LayerIndex.uiWorldSpace.intVal))
+                foreach (Transform uiWorldSpaceObject in effectPrefab.transform.GetAllChildrenRecursive()
+                                                                               .Where(t => t.gameObject.layer == LayerIndex.uiWorldSpace.intVal))
                 {
                     if (!rootUIWorldSpaceObjects.Exists(uiWorldSpaceObject.IsChildOf))
                     {
