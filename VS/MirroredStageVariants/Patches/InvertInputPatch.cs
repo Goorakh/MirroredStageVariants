@@ -43,7 +43,7 @@ namespace MirroredStageVariants.Patches
             if (c.TryFindNext(out foundCursors,
                               x => x.MatchCallOrCallvirt(SymbolExtensions.GetMethodInfo<Rewired.Player>(_ => _.GetAxis(default(int)))),
                               x => x.MatchCallOrCallvirt(SymbolExtensions.GetMethodInfo<Rewired.Player>(_ => _.GetAxis(default(int)))),
-                              x => x.MatchCall(AccessTools.DeclaredConstructor(typeof(Vector2), new Type[] { typeof(float), typeof(float) }))))
+                              x => x.MatchCall(AccessTools.DeclaredConstructor(typeof(Vector2), [typeof(float), typeof(float)]))))
             {
                 ILCursor cursor = foundCursors[2];
                 int patchIndex = cursor.Index + 1;
