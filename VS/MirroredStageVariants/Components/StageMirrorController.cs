@@ -33,7 +33,10 @@ namespace MirroredStageVariants.Components
                     return false;
             }
 
-            return true;
+            if (Main.MirrorHiddenRealms.Value)
+                return true;
+
+			return scene.stageOrder > 0 && scene.stageOrder <= Run.stagesPerLoop;
         }
 
         public static bool CurrentlyIsMirrored
