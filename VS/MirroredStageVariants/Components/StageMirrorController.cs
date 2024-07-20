@@ -67,7 +67,8 @@ namespace MirroredStageVariants.Components
 
         void Awake()
         {
-            _isMirrored = RoR2Application.rng.nextNormalizedFloat <= Main.MirrorChance.Value / 100f;
+            var rng = Run.instance ? new(Run.instance.stageRng) : RoR2Application.rng;
+            _isMirrored = rng.nextNormalizedFloat <= Main.MirrorChance.Value / 100f;
 
 #if DEBUG
             Log.Debug($"mirrored={_isMirrored}");
