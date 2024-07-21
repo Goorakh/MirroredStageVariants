@@ -1,5 +1,7 @@
 ﻿using RoR2;
+using System;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace MirroredStageVariants.Components
 {
@@ -70,7 +72,23 @@ namespace MirroredStageVariants.Components
 
         void Awake()
         {
-            var rng = Run.instance ? new(Run.instance.stageRng) : RoR2Application.rng;
+            Xoroshiro128Plus rng = RoR2Application.rng;
+            Run instance = Run.instance;
+
+            if (instance)
+            {
+                ulong seed = NetworkServer.active && NetworkServer.dontListen ? instance.seed
+                    : unchecked((ulong)instance.NetworkstartTimeUtc._binaryValue);
+
+                seed ^= Hash128.Compute(SceneCatalog.mostRecentSceneDef.cachedName).u64_0;
+                rng = new(seed);
+
+                for (int i = 0; i < instance.stageClearCount; i++)
+                {
+                    rng.Next();
+                }
+            }
+
             _isMirrored = rng.nextNormalizedFloat <= Main.MirrorChance.Value / 100f;
 
 #if DEBUG
