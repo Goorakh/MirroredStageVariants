@@ -13,10 +13,10 @@ namespace MirroredStageVariants.Patches
         public static void Apply()
         {
             handle = Addressables.LoadAssetAsync<GameObject>(key);
-            handle.Completed += _ => showText(true);
+            handle.Completed += _ => showText(false);
         }
 
-        public static void Undo() => showText(false);
+        public static void Undo() => showText(true);
 
         static void showText(bool enabled)
         {
