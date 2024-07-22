@@ -4,15 +4,21 @@ using UnityEngine;
 
 public class ExportAssetBundles
 {
-    [MenuItem("Assets/Build AssetBundle")]
-    static void ExportResource()
+    [MenuItem("Assets/Export AssetBundle(s)")]
+    static void export()
     {
-        const string folderName = "Assets/AssetBundles";
+        const string EXPORT_PATH = "Assets/AssetBundles/";
 
-        //Build for Windows platform
-        BuildPipeline.BuildAssetBundles(folderName, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows64);
+        if (!Directory.Exists(EXPORT_PATH))
+            Directory.CreateDirectory(EXPORT_PATH);
 
-        //Refresh the Project folder
-        AssetDatabase.Refresh();
+        AssetBundleManifest manifest = BuildPipeline.BuildAssetBundles(EXPORT_PATH, BuildAssetBundleOptions.ForceRebuildAssetBundle, BuildTarget.StandaloneWindows64);
+        if (!manifest)
+        {
+            Debug.LogError("Failed to build asset bundles");
+            return;
+        }
+
+        Debug.Log($"Exported {manifest.GetAllAssetBundles().Length} AssetBundle(s)");
     }
 }
