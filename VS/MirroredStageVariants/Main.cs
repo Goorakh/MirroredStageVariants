@@ -87,7 +87,7 @@ namespace MirroredStageVariants
 
         void loadAssets()
         {
-            string assetBundlePath = Path.Combine(Path.GetDirectoryName(Info.Location), "assets");
+            string assetBundlePath = Path.Combine(Path.GetDirectoryName(Info.Location), "mirror_assets");
             if (!File.Exists(assetBundlePath))
             {
                 Log.Error($"Assets file not found, expected path: {assetBundlePath}");
