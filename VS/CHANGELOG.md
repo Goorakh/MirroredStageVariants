@@ -10,6 +10,8 @@
 
 * Updated R2API.Core dependency: 5.0.11 -> 5.1.0
 
+* Fixed dead image links in README
+
 **1.1.1 Changes:**
 
 * Possibly fixed some mod compatilitities, causing the game to freeze during loading screen
