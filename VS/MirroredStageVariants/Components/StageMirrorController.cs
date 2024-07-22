@@ -22,6 +22,7 @@ namespace MirroredStageVariants.Components
         }
 
         static StageMirrorController _instance;
+        public static StageMirrorController Instance => _instance;
 
         public static bool CanMirrorScene(SceneDef scene)
         {
@@ -54,11 +55,11 @@ namespace MirroredStageVariants.Components
                 if (Commands.OverrideStageIsMirrored.HasValue)
                     return Commands.OverrideStageIsMirrored.Value;
 
-                return _instance._isMirrored;
+                return _instance.IsMirrored;
             }
         }
 
-        bool _isMirrored;
+        public bool IsMirrored { get; private set; }
 
         void OnEnable()
         {
@@ -89,10 +90,10 @@ namespace MirroredStageVariants.Components
                 }
             }
 
-            _isMirrored = rng.nextNormalizedFloat <= Main.MirrorChance.Value / 100f;
+            IsMirrored = rng.nextNormalizedFloat <= Main.MirrorChance.Value / 100f;
 
 #if DEBUG
-            Log.Debug($"mirrored={_isMirrored}");
+            Log.Debug($"mirrored={IsMirrored}");
 #endif
         }
     }
