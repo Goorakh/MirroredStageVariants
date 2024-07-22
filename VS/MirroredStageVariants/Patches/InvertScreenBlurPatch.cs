@@ -72,50 +72,6 @@ namespace MirroredStageVariants.Patches
             {
                 Log.Error("Failed to find Blit call");
             }
-
-            /*
-            if (self.Downsample != self.lastDownsample || !self.BlurRegion.Equals(self.lastBlurRegion))
-            {
-                self.CreateNewBlurredScreen();
-                self.lastDownsample = self.Downsample;
-                self.lastBlurRegion = self.BlurRegion;
-            }
-            if (self.BlurredScreen.IsCreated())
-            {
-                self.BlurredScreen.DiscardContents();
-            }
-            self.material.SetFloat(TranslucentImageSource._sizePropId, self.Size * self.ScreenSize);
-            int num = (self.iteration > 0) ? 1 : 0;
-            int width = self.BlurredScreen.width >> num;
-            int height = self.BlurredScreen.height >> num;
-            RenderTexture temporary = RenderTexture.GetTemporary(width, height, 0, sourceRt.format);
-            temporary.filterMode = FilterMode.Bilinear;
-            sourceRt.filterMode = FilterMode.Bilinear;
-            self.material.SetVector(TranslucentImageSource._cropRegionPropId, new Vector4(self.BlurRegion.xMin, self.BlurRegion.yMin, self.BlurRegion.xMax, self.BlurRegion.yMax));
-            Graphics.Blit(sourceRt, temporary, self.material, 1);
-            for (int i = 2; i <= self.iteration; i++)
-            {
-                self.ProgressiveResampling(i, ref temporary);
-            }
-            for (int j = self.iteration - 1; j >= 1; j--)
-            {
-                self.ProgressiveResampling(j, ref temporary);
-            }
-
-            if (StageMirrorController.CurrentStageIsMirrored)
-            {
-                RenderTexture temporary2 = RenderTexture.GetTemporary(temporary.width, temporary.height, 0, temporary.format);
-                temporary2.filterMode = FilterMode.Bilinear;
-
-                Graphics.Blit(temporary, temporary2, Main.Instance.MirrorMaterial);
-
-                RenderTexture.ReleaseTemporary(temporary);
-                temporary = temporary2;
-            }
-
-            Graphics.Blit(temporary, self.BlurredScreen, self.material, 0);
-            RenderTexture.ReleaseTemporary(temporary);
-            */
         }
     }
 }
