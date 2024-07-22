@@ -55,7 +55,7 @@ namespace MirroredStageVariants
             HideStunEffect.Apply();
 
             stopwatch.Stop();
-            Log.Info_NoCallerPrefix($"Initialized in {stopwatch.Elapsed.TotalSeconds:F2} seconds");
+            Log.Message_NoCallerPrefix($"Initialized in {stopwatch.Elapsed.TotalSeconds:F2}s");
         }
 
         void OnDestroy()
