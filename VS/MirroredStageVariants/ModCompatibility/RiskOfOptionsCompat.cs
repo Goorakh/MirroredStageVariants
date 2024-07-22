@@ -25,6 +25,7 @@ namespace MirroredStageVariants.ModCompatibility
             }), MOD_GUID, MOD_NAME);
 
             ModSettingsManager.AddOption(new CheckBoxOption(Main.MirrorNonStages), MOD_GUID, MOD_NAME);
+            ModSettingsManager.AddOption(new CheckBoxOption(Main.MirrorHiddenRealms), MOD_GUID, MOD_NAME);
         }
     }
 }

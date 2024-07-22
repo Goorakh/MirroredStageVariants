@@ -1,5 +1,7 @@
 ﻿using RoR2;
+using System;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace MirroredStageVariants.Components
 {
@@ -33,7 +35,10 @@ namespace MirroredStageVariants.Components
                     return false;
             }
 
-            return true;
+            if (Main.MirrorHiddenRealms.Value)
+                return true;
+
+            return scene.stageOrder > 0 && scene.stageOrder <= Run.stagesPerLoop;
         }
 
         public static bool CurrentlyIsMirrored
@@ -67,7 +72,24 @@ namespace MirroredStageVariants.Components
 
         void Awake()
         {
-            _isMirrored = RoR2Application.rng.nextNormalizedFloat <= Main.MirrorChance.Value / 100f;
+            Xoroshiro128Plus rng = RoR2Application.rng;
+            Run instance = Run.instance;
+
+            if (instance)
+            {
+                ulong seed = NetworkServer.active && NetworkServer.dontListen ? instance.seed
+                    : unchecked((ulong)instance.NetworkstartTimeUtc._binaryValue);
+
+                seed ^= Hash128.Compute(SceneCatalog.mostRecentSceneDef.cachedName).u64_0;
+                rng = new(seed);
+
+                for (int i = 0; i < instance.stageClearCount; i++)
+                {
+                    rng.Next();
+                }
+            }
+
+            _isMirrored = rng.nextNormalizedFloat <= Main.MirrorChance.Value / 100f;
 
 #if DEBUG
             Log.Debug($"mirrored={_isMirrored}");

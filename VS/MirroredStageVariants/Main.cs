@@ -32,6 +32,8 @@ namespace MirroredStageVariants
 
         public static ConfigEntry<bool> MirrorNonStages { get; private set; }
 
+        public static ConfigEntry<bool> MirrorHiddenRealms { get; private set; }
+
         void Awake()
         {
             Stopwatch stopwatch = Stopwatch.StartNew();
@@ -50,6 +52,7 @@ namespace MirroredStageVariants
             InvertScreenBlurPatch.Apply();
             InvertDamageNumberPositionsPatch.Apply();
             InvertTypewriteTextControllerPatch.Apply();
+            HideStunEffect.Apply();
 
             stopwatch.Stop();
             Log.Info_NoCallerPrefix($"Initialized in {stopwatch.Elapsed.TotalSeconds:F2} seconds");
@@ -63,6 +66,7 @@ namespace MirroredStageVariants
             InvertScreenBlurPatch.Undo();
             InvertDamageNumberPositionsPatch.Undo();
             InvertTypewriteTextControllerPatch.Undo();
+            HideStunEffect.Undo();
 
             Instance = SingletonHelper.Unassign(Instance, this);
         }
@@ -72,6 +76,8 @@ namespace MirroredStageVariants
             MirrorChance = file.Bind("General", "Mirror Chance", 50f, new ConfigDescription("The percent chance that any given stage will be mirrored", new AcceptableValueRange<float>(0f, 100f)));
 
             MirrorNonStages = file.Bind("General", "Mirror Non-Stages", true, "If non-stage scenes (menu, cutscenes) should be mirrored, if enabled, they are always mirrored, if disabled, they are never mirrored.");
+
+            MirrorHiddenRealms = file.Bind("General", "Mirror Hidden Realms", true, "If stages outside the normal stage one through five rotation can be mirrored.");
 
             if (RiskOfOptionsCompat.IsEnabled)
             {

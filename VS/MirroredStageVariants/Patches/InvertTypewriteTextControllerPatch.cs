@@ -43,7 +43,8 @@ namespace MirroredStageVariants.Patches
                 ILLabel applyMirroredVisibleCharactersCountLabel = c.DefineLabel();
                 ILLabel afterPatchLabel = c.DefineLabel();
 
-                c.EmitDelegate(() => StageMirrorController.CurrentlyIsMirrored);
+                c.Emit(OpCodes.Ldarg_0);
+                c.EmitDelegate((TextMeshProUGUI text) => StageMirrorController.CurrentlyIsMirrored && text?.name.StartsWith("Countdown") is false);
                 c.Emit(OpCodes.Brtrue, applyMirroredVisibleCharactersCountLabel);
 
                 c.Index++;
