@@ -16,7 +16,7 @@ namespace MirroredStageVariants
         public const string PluginGUID = PluginAuthor + "." + PluginName;
         public const string PluginAuthor = "Gorakh";
         public const string PluginName = "MirroredStageVariants";
-        public const string PluginVersion = "1.2.0";
+        public const string PluginVersion = "1.2.1";
 
         internal static Main Instance { get; private set; }
 

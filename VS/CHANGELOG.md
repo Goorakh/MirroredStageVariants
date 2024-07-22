@@ -1,10 +1,14 @@
+**1.2.1 Changes:**
+
+* Fixed typos
+
 **1.2.0 Changes:**
 
-* Changes by 6thmoon:
-  * Mirror state is now consistent between players in multiplier, provided the mirror chance is set to the same value
-  * Added config option to always keep hidden realms unmirrored
-  * Fixed stun effect showing text when stage is mirrored
-  * Fixed Commencement escape timer having incorrect scale when stage is mirrored
+* Changes contributed by 6thmoon:
+  * Mirror state is now consistent between players in multiplayer, provided the mirror chance is set to the same value.
+  * Added config option to always keep hidden realms unmirrored.
+  * Fixed stun effect showing text when stage is mirrored.
+  * Fixed Commencement escape timer having incorrect scale when stage is mirrored.
 
 * Added icon to Risk of Options
 

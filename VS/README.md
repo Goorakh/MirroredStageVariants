@@ -1,6 +1,6 @@
 # Mirrored Stage Variants
 
-Adds more variety to stages by occasionaly mirroring them (50/50 chance by default, configurable). Clientside.
+Adds more variety to stages by occasionally mirroring them (50/50 chance by default, configurable). Clientside.
 
 <details>
   <summary>Screenshots</summary>
