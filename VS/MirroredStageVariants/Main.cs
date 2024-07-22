@@ -108,11 +108,24 @@ namespace MirroredStageVariants
             if (!assetBundle)
                 return;
 
-            MirrorMaterial = assetBundle.LoadAsset<Material>("Mirror");
-            MirrorOverlayShader = assetBundle.LoadAsset<Shader>("MirrorOverlay");
+            T loadAsset<T>(string name) where T : UnityEngine.Object
+            {
+                T asset = assetBundle.LoadAsset<T>(name);
+
+                if (!asset)
+                {
+                    Log.Error($"Missing asset '{name}', check editor export!");
+                }
+
+                return asset;
+            }
+
+            MirrorMaterial = loadAsset<Material>("Mirror");
+
+            MirrorOverlayShader = loadAsset<Shader>("MirrorOverlay");
 
 #if DEBUG
-            DebugDrawUV = assetBundle.LoadAsset<Material>("DebugDrawUV");
+            DebugDrawUV = loadAsset<Material>("DebugDrawUV");
 #endif
         }
     }
