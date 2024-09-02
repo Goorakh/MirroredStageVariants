@@ -12,8 +12,8 @@ namespace MirroredStageVariants.Utils
         static CameraEvents()
         {
             Camera.onPreCull = (Camera.CameraCallback)Delegate.Combine(Camera.onPreCull, new Camera.CameraCallback(cam => OnPreCull?.Invoke(cam)));
-            Camera.onPreRender = (Camera.CameraCallback)Delegate.Combine(Camera.onPreCull, new Camera.CameraCallback(cam => OnPreRender?.Invoke(cam)));
-            Camera.onPostRender = (Camera.CameraCallback)Delegate.Combine(Camera.onPreCull, new Camera.CameraCallback(cam => OnPostRender?.Invoke(cam)));
+            Camera.onPreRender = (Camera.CameraCallback)Delegate.Combine(Camera.onPreRender, new Camera.CameraCallback(cam => OnPreRender?.Invoke(cam)));
+            Camera.onPostRender = (Camera.CameraCallback)Delegate.Combine(Camera.onPostRender, new Camera.CameraCallback(cam => OnPostRender?.Invoke(cam)));
         }
     }
 }
