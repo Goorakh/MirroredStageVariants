@@ -1,8 +1,7 @@
-﻿using MirroredStageVariants.Components;
+﻿using HarmonyLib;
+using MirroredStageVariants.Components;
 using MirroredStageVariants.Utils;
 using MonoMod.RuntimeDetour;
-using MonoMod.Utils;
-using RoR2;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,9 +17,9 @@ namespace MirroredStageVariants.Patches
 
         public static void Apply()
         {
-            AkGameObj_MirrorPosition_Hook = new Hook(() => default(AkGameObj).GetPosition(), AkGameObj_GenericTryMirrorPositionResult);
-            AkGameObj_MirrorForwardVector_Hook = new Hook(() => default(AkGameObj).GetForward(), AkGameObj_GenericTryMirrorVectorResult);
-            AkGameObj_MirrorUpVector_Hook = new Hook(() => default(AkGameObj).GetUpward(), AkGameObj_GenericTryMirrorVectorResult);
+            AkGameObj_MirrorPosition_Hook = new Hook(SymbolExtensions.GetMethodInfo<AkGameObj>(_ => _.GetPosition()), AkGameObj_GenericTryMirrorPositionResult);
+            AkGameObj_MirrorForwardVector_Hook = new Hook(SymbolExtensions.GetMethodInfo<AkGameObj>(_ => _.GetForward()), AkGameObj_GenericTryMirrorVectorResult);
+            AkGameObj_MirrorUpVector_Hook = new Hook(SymbolExtensions.GetMethodInfo<AkGameObj>(_ => _.GetUpward()), AkGameObj_GenericTryMirrorVectorResult);
         }
 
         public static void Undo()
