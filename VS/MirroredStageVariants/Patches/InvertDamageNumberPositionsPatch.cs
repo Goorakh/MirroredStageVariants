@@ -15,12 +15,6 @@ namespace MirroredStageVariants.Patches
             AsyncOperationHandle<GameObject> damageNumberManagerLoad = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Core/DamageNumberManager.prefab");
             damageNumberManagerLoad.Completed += handle =>
             {
-                if (handle.Status != AsyncOperationStatus.Succeeded)
-                {
-                    Log.Error($"Failed to load DamageNumberManager: {handle.OperationException}");
-                    return;
-                }
-
                 GameObject damageNumberManager = handle.Result;
 
                 FlipParticleSystemIfMirrored flipParticleSystemComponent = damageNumberManager.AddComponent<FlipParticleSystemIfMirrored>();
@@ -31,12 +25,6 @@ namespace MirroredStageVariants.Patches
             AsyncOperationHandle<GameObject> critGlassesVoidExecuteEffectLoad = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/CritGlassesVoid/CritGlassesVoidExecuteEffect.prefab");
             critGlassesVoidExecuteEffectLoad.Completed += handle =>
             {
-                if (handle.Status != AsyncOperationStatus.Succeeded)
-                {
-                    Log.Error($"Failed to load CritGlassesVoidExecuteEffect: {handle.OperationException}");
-                    return;
-                }
-
                 GameObject effectPrefab = handle.Result;
 
                 Transform fakeDamageNumbersTransform = effectPrefab.transform.Find("FakeDamageNumbers");

@@ -20,19 +20,10 @@ namespace MirroredStageVariants.Patches
                 AsyncOperationHandle<GameObject> loadOperation = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/VFX/StunVfx.prefab");
                 loadOperation.Completed += handle =>
                 {
-                    _stunVfxText = null;
+                    GameObject stunVfx = handle.Result;
 
-                    if (handle.Status == AsyncOperationStatus.Succeeded)
-                    {
-                        GameObject stunVfx = handle.Result;
-
-                        _stunVfxText = stunVfx.GetComponentInChildren<TextMeshPro>();
-                        setTextVisibility(false);
-                    }
-                    else
-                    {
-                        Log.Error_NoCallerPrefix($"Failed to load StunVfx: {handle.OperationException}");
-                    }
+                    _stunVfxText = stunVfx.GetComponentInChildren<TextMeshPro>();
+                    setTextVisibility(false);
                 };
             }
         }

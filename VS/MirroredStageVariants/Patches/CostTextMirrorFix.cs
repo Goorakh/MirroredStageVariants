@@ -14,17 +14,10 @@ namespace MirroredStageVariants.Patches
             AsyncOperationHandle<GameObject> costHologramLoadHandle = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/VFX/CostHologramContent.prefab");
             costHologramLoadHandle.Completed += handle =>
             {
-                if (handle.Status == AsyncOperationStatus.Succeeded)
-                {
-                    GameObject costHologramContent = handle.Result;
+                GameObject costHologramContent = handle.Result;
 
-                    ScaleOnAwakeIfMirrored scaleOnAwakeIfMirrored = costHologramContent.AddComponent<ScaleOnAwakeIfMirrored>();
-                    scaleOnAwakeIfMirrored.ScaleMultiplier = new Vector3(-1f, 1f, 1f);
-                }
-                else
-                {
-                    Log.Error_NoCallerPrefix($"Failed to load cost hologram prefab: {handle.OperationException}");
-                }
+                ScaleOnAwakeIfMirrored scaleOnAwakeIfMirrored = costHologramContent.AddComponent<ScaleOnAwakeIfMirrored>();
+                scaleOnAwakeIfMirrored.ScaleMultiplier = new Vector3(-1f, 1f, 1f);
             };
         }
     }
