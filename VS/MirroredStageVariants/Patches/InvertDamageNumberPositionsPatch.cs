@@ -1,44 +1,66 @@
 ﻿using MirroredStageVariants.Components;
-using Mono.Cecil.Cil;
-using MonoMod.Cil;
-using System.Runtime.CompilerServices;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace MirroredStageVariants.Patches
 {
     static class InvertDamageNumberPositionsPatch
     {
+        static readonly List<MonoBehaviour> _addedComponents = [];
+
         public static void Apply()
         {
-            IL.RoR2.DamageNumberManager.SpawnDamageNumber += DamageNumberManager_SpawnDamageNumber;
+            AsyncOperationHandle<GameObject> damageNumberManagerLoad = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Core/DamageNumberManager.prefab");
+            damageNumberManagerLoad.Completed += handle =>
+            {
+                if (handle.Status != AsyncOperationStatus.Succeeded)
+                {
+                    Log.Error($"Failed to load DamageNumberManager: {handle.OperationException}");
+                    return;
+                }
+
+                GameObject damageNumberManager = handle.Result;
+
+                FlipParticleSystemIfMirrored flipParticleSystemComponent = damageNumberManager.AddComponent<FlipParticleSystemIfMirrored>();
+
+                _addedComponents.Add(flipParticleSystemComponent);
+            };
+
+            AsyncOperationHandle<GameObject> critGlassesVoidExecuteEffectLoad = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/CritGlassesVoid/CritGlassesVoidExecuteEffect.prefab");
+            critGlassesVoidExecuteEffectLoad.Completed += handle =>
+            {
+                if (handle.Status != AsyncOperationStatus.Succeeded)
+                {
+                    Log.Error($"Failed to load CritGlassesVoidExecuteEffect: {handle.OperationException}");
+                    return;
+                }
+
+                GameObject effectPrefab = handle.Result;
+
+                Transform fakeDamageNumbersTransform = effectPrefab.transform.Find("FakeDamageNumbers");
+                if (fakeDamageNumbersTransform)
+                {
+                    FlipParticleSystemIfMirrored flipParticleSystemComponent = fakeDamageNumbersTransform.gameObject.AddComponent<FlipParticleSystemIfMirrored>();
+
+                    _addedComponents.Add(flipParticleSystemComponent);
+                }
+                else
+                {
+                    Log.Error("Failed to find fake damage number emitter on CritGlassesVoidExecuteEffect");
+                }
+            };
         }
 
         public static void Undo()
         {
-            IL.RoR2.DamageNumberManager.SpawnDamageNumber -= DamageNumberManager_SpawnDamageNumber;
-        }
-
-        static void DamageNumberManager_SpawnDamageNumber(ILContext il)
-        {
-            ILCursor c = new ILCursor(il);
-
-            int emitParamsLocalIndex = -1;
-            if (c.TryGotoNext(MoveType.After,
-                              x => x.MatchLdloca(out emitParamsLocalIndex),
-                              x => x.MatchInitobj<ParticleSystem.EmitParams>()))
+            foreach (MonoBehaviour component in _addedComponents)
             {
-                c.Emit(OpCodes.Ldloca, emitParamsLocalIndex);
-
-                c.EmitDelegate(tryMirrorParticle);
-                [MethodImpl(MethodImplOptions.AggressiveInlining)]
-                void tryMirrorParticle(ref ParticleSystem.EmitParams emitParams)
-                {
-                    if (StageMirrorController.CurrentlyIsMirrored)
-                    {
-                        emitParams.rotation3D = (Quaternion.Euler(emitParams.rotation3D) * Quaternion.Euler(0f, 180f, 0f)).eulerAngles;
-                    }
-                }
+                GameObject.Destroy(component);
             }
+
+            _addedComponents.Clear();
         }
     }
 }
