@@ -1,7 +1,7 @@
 ﻿using MirroredStageVariants.Components;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
-using RoR2;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace MirroredStageVariants.Patches
@@ -10,20 +10,12 @@ namespace MirroredStageVariants.Patches
     {
         public static void Apply()
         {
-            On.RoR2.DamageNumberManager.Awake += DamageNumberManager_Awake;
             IL.RoR2.DamageNumberManager.SpawnDamageNumber += DamageNumberManager_SpawnDamageNumber;
         }
 
         public static void Undo()
         {
-            On.RoR2.DamageNumberManager.Awake -= DamageNumberManager_Awake;
             IL.RoR2.DamageNumberManager.SpawnDamageNumber -= DamageNumberManager_SpawnDamageNumber;
-        }
-
-        static void DamageNumberManager_Awake(On.RoR2.DamageNumberManager.orig_Awake orig, DamageNumberManager self)
-        {
-            orig(self);
-            self.gameObject.AddComponent<InvertParticlePositionsOnRender>();
         }
 
         static void DamageNumberManager_SpawnDamageNumber(ILContext il)
@@ -36,13 +28,16 @@ namespace MirroredStageVariants.Patches
                               x => x.MatchInitobj<ParticleSystem.EmitParams>()))
             {
                 c.Emit(OpCodes.Ldloca, emitParamsLocalIndex);
-                c.EmitDelegate((ref ParticleSystem.EmitParams emitParams) =>
+
+                c.EmitDelegate(tryMirrorParticle);
+                [MethodImpl(MethodImplOptions.AggressiveInlining)]
+                void tryMirrorParticle(ref ParticleSystem.EmitParams emitParams)
                 {
                     if (StageMirrorController.CurrentlyIsMirrored)
                     {
                         emitParams.rotation3D = (Quaternion.Euler(emitParams.rotation3D) * Quaternion.Euler(0f, 180f, 0f)).eulerAngles;
                     }
-                });
+                }
             }
         }
     }
