@@ -125,7 +125,7 @@ namespace MirroredStageVariants.Components
                 Camera = GetComponent<Camera>();
                 updateRenderTexture();
 
-                Shader mirrorOverlay = Main.Instance ? Main.Instance.MirrorOverlayShader : null;
+                Shader mirrorOverlay = Assets.MirrorOverlayShader;
                 if (mirrorOverlay)
                 {
                     Material = new Material(mirrorOverlay);

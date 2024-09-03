@@ -2,10 +2,7 @@ using BepInEx;
 using BepInEx.Configuration;
 using MirroredStageVariants.ModCompatibility;
 using MirroredStageVariants.Patches;
-using System;
 using System.Diagnostics;
-using System.IO;
-using UnityEngine;
 
 namespace MirroredStageVariants
 {
@@ -19,14 +16,6 @@ namespace MirroredStageVariants
         public const string PluginVersion = "1.2.1";
 
         internal static Main Instance { get; private set; }
-
-        public Material MirrorMaterial { get; private set; }
-
-        public Shader MirrorOverlayShader { get; private set; }
-
-#if DEBUG
-        public Material DebugDrawUV { get; private set; }
-#endif
 
         public static ConfigEntry<float> MirrorChance { get; private set; }
 
@@ -43,8 +32,6 @@ namespace MirroredStageVariants
             Instance = SingletonHelper.Assign(Instance, this);
 
             initConfigs(Config);
-
-            loadAssets();
 
             MirrorAudioPatch.Apply();
             InvertScreenCoordinatesPatch.Apply();
@@ -83,50 +70,6 @@ namespace MirroredStageVariants
             {
                 RiskOfOptionsCompat.AddConfigOptions();
             }
-        }
-
-        void loadAssets()
-        {
-            string assetBundlePath = Path.Combine(Path.GetDirectoryName(Info.Location), "mirror_assets");
-            if (!File.Exists(assetBundlePath))
-            {
-                Log.Error($"Assets file not found, expected path: {assetBundlePath}");
-                return;
-            }
-
-            AssetBundle assetBundle;
-            try
-            {
-                assetBundle = AssetBundle.LoadFromFile(assetBundlePath);
-            }
-            catch (Exception e)
-            {
-                Log.Error_NoCallerPrefix(e);
-                return;
-            }
-
-            if (!assetBundle)
-                return;
-
-            T loadAsset<T>(string name) where T : UnityEngine.Object
-            {
-                T asset = assetBundle.LoadAsset<T>(name);
-
-                if (!asset)
-                {
-                    Log.Error($"Missing asset '{name}', check editor export!");
-                }
-
-                return asset;
-            }
-
-            MirrorMaterial = loadAsset<Material>("Mirror");
-
-            MirrorOverlayShader = loadAsset<Shader>("MirrorOverlay");
-
-#if DEBUG
-            DebugDrawUV = loadAsset<Material>("DebugDrawUV");
-#endif
         }
     }
 }
