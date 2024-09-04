@@ -23,9 +23,9 @@ namespace MirroredStageVariants.Patches
             public readonly GameObject GameObject;
             public readonly AkGameObj AkObj;
 
-            public Vector3 Position;
-            public Vector3 Forward;
-            public Vector3 Up;
+            public Vector3 Position { get; private set; }
+            public Vector3 Forward { get; private set; }
+            public Vector3 Up { get; private set; }
 
             public AkObjectData(ulong id, GameObject gameObject)
             {
@@ -77,17 +77,17 @@ namespace MirroredStageVariants.Patches
                 }
             }
 
-            public int UpdateMirrorPosition()
+            public AKRESULT UpdateMirrorPosition()
             {
                 GetMirrorPosition(out Vector3 position, out Vector3 forward, out Vector3 up);
 
                 if (_origSetPosition == null)
                 {
                     Log.Error("Missing set position function");
-                    return (int)AKRESULT.AK_Fail;
+                    return AKRESULT.AK_Fail;
                 }
 
-                return _origSetPosition(Id, position, forward, up);
+                return (AKRESULT)_origSetPosition(Id, position, forward, up);
             }
         }
 
