@@ -2,6 +2,7 @@
 using MirroredStageVariants.Components;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
+using RoR2;
 using RoR2.CameraModes;
 using UnityEngine;
 
@@ -50,6 +51,12 @@ namespace MirroredStageVariants.Patches
                 if (cursor.TryGotoPrev(x => x.MatchLdloca(out moveInputLocalIndex)))
                 {
                     cursor.Index = patchIndex;
+
+                    if (!cursor.TryGotoNext(MoveType.After,
+                                            x => x.MatchCallOrCallvirt<InputBankTest>(nameof(InputBankTest.SetRawMoveStates))))
+                    {
+                        Log.Error("Failed to find raw move state call");
+                    }
 
                     cursor.Emit(OpCodes.Ldloca, moveInputLocalIndex);
                     cursor.EmitDelegate((ref Vector2 moveInput) =>

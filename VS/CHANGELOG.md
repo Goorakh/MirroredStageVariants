@@ -1,3 +1,7 @@
+**?.?.? Changes:**
+
+* Fixed Seeker Meditate left/right inputs being flipped if the stage is mirrored
+
 **1.2.3 Changes:**
 
 * Fixed incorrect dependency versions
