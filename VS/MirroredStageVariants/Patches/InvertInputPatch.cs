@@ -2,9 +2,7 @@
 using MirroredStageVariants.Components;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
-using RoR2;
 using RoR2.CameraModes;
-using System;
 using UnityEngine;
 
 namespace MirroredStageVariants.Patches
