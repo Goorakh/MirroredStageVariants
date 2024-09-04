@@ -113,12 +113,13 @@ namespace MirroredStageVariants.Patches
 
                 c.Emit(OpCodes.Ldarg, localsParameter);
                 c.Emit(OpCodes.Ldfld, currentLabelField);
-                c.EmitDelegate((TextMeshProUGUI label) =>
+                c.EmitDelegate(shouldMirrorLabel);
+                static bool shouldMirrorLabel(TextMeshProUGUI label)
                 {
                     return StageMirrorController.CurrentlyIsMirrored &&
                            InvertTypewriterInfo.Current &&
                            Array.IndexOf(InvertTypewriterInfo.Current.InvertedLabels, label) != -1;
-                });
+                }
 
                 c.Emit(OpCodes.Brtrue, applyMirroredVisibleCharactersCountLabel);
 
@@ -128,10 +129,11 @@ namespace MirroredStageVariants.Patches
 
                 c.MarkLabel(applyMirroredVisibleCharactersCountLabel);
                 c.MoveAfterLabels();
-                c.EmitDelegate((TMP_Text label, int maxVisibleCharacters) =>
+                c.EmitDelegate(setVisibleCharactersMirrored);
+                static void setVisibleCharactersMirrored(TMP_Text label, int maxVisibleCharacters)
                 {
                     label.firstVisibleCharacter = label.text.Length - maxVisibleCharacters;
-                });
+                }
 
                 c.MarkLabel(afterPatchLabel);
             }

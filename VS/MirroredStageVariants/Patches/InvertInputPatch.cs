@@ -4,6 +4,7 @@ using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using RoR2;
 using RoR2.CameraModes;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace MirroredStageVariants.Patches
@@ -59,13 +60,14 @@ namespace MirroredStageVariants.Patches
                     }
 
                     cursor.Emit(OpCodes.Ldloca, moveInputLocalIndex);
-                    cursor.EmitDelegate((ref Vector2 moveInput) =>
+                    cursor.EmitDelegate(tryMirrorMoveInput);
+                    static void tryMirrorMoveInput(ref Vector2 moveInput)
                     {
                         if (StageMirrorController.CurrentlyIsMirrored)
                         {
                             moveInput.x *= -1f;
                         }
-                    });
+                    }
                 }
                 else
                 {
