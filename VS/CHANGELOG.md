@@ -1,3 +1,7 @@
+**1.2.3 Changes:**
+
+* Fixed incorrect dependency versions
+
 **1.2.2 Changes:**
 
 * Fixed for SotS
