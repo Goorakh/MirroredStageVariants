@@ -1,3 +1,7 @@
+**1.2.2 Changes:**
+
+* Fixed for SotS
+
 **1.2.1 Changes:**
 
 * Fixed typos
