@@ -7,7 +7,7 @@
 	"description": "Adds more variety to stages by occasionaly mirroring them. Clientside.",
 	"dependencies": [
 		"bbepis-BepInExPack-5.4.2113",
-		"RiskofThunder-HookGenPatcher-1.2.3",
-		"RiskofThunder-R2API_Core-5.1.0"
+		"RiskofThunder-HookGenPatcher-1.2.4",
+		"RiskofThunder-R2API_Core-5.1.1"
 	]
 }
