@@ -1,4 +1,4 @@
-**?.?.? Changes:**
+**1.2.4 Changes:**
 
 * Fixed Seeker Meditate left/right inputs being flipped if the stage is mirrored
 
