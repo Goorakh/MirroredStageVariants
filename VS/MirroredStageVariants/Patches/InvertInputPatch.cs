@@ -4,7 +4,6 @@ using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using RoR2;
 using RoR2.CameraModes;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace MirroredStageVariants.Patches

@@ -53,14 +53,14 @@ namespace MirroredStageVariants
             }
         }
 
-        readonly static AssetReference<Material> _mirrorMaterialRef = new AssetReference<Material>();
+        static readonly AssetReference<Material> _mirrorMaterialRef = new AssetReference<Material>();
         public static Material MirrorMaterial => _mirrorMaterialRef.Asset;
 
-        readonly static AssetReference<Shader> _mirrorOverlayShaderRef = new AssetReference<Shader>();
+        static readonly AssetReference<Shader> _mirrorOverlayShaderRef = new AssetReference<Shader>();
         public static Shader MirrorOverlayShader => _mirrorOverlayShaderRef.Asset;
 
 #if DEBUG
-        readonly static AssetReference<Material> _debugDrawUVRef = new AssetReference<Material>();
+        static readonly AssetReference<Material> _debugDrawUVRef = new AssetReference<Material>();
         public static Material DebugDrawUV => _debugDrawUVRef.Asset;
 #endif
 
