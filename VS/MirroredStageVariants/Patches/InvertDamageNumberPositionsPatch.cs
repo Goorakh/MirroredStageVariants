@@ -1,54 +1,34 @@
 ﻿using MirroredStageVariants.Components;
-using System.Collections.Generic;
+using MirroredStageVariants.Utils;
+using MirroredStageVariants.Utils.Extensions;
+using RoR2;
+using RoR2BepInExPack.GameAssetPathsBetter;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace MirroredStageVariants.Patches
 {
     static class InvertDamageNumberPositionsPatch
     {
-        static readonly List<MonoBehaviour> _addedComponents = [];
-
-        public static void Apply()
+        [SystemInitializer]
+        static void Init()
         {
-            AsyncOperationHandle<GameObject> damageNumberManagerLoad = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Core/DamageNumberManager.prefab");
-            damageNumberManagerLoad.Completed += handle =>
+            AssetLoadUtils.LoadAssetAsync<GameObject>(RoR2_Base_Core.DamageNumberManager_prefab).OnSuccess(damageNumberManager =>
             {
-                GameObject damageNumberManager = handle.Result;
+                damageNumberManager.AddComponent<FlipParticleSystemIfMirrored>();
+            });
 
-                FlipParticleSystemIfMirrored flipParticleSystemComponent = damageNumberManager.AddComponent<FlipParticleSystemIfMirrored>();
-
-                _addedComponents.Add(flipParticleSystemComponent);
-            };
-
-            AsyncOperationHandle<GameObject> critGlassesVoidExecuteEffectLoad = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/CritGlassesVoid/CritGlassesVoidExecuteEffect.prefab");
-            critGlassesVoidExecuteEffectLoad.Completed += handle =>
+            AssetLoadUtils.LoadAssetAsync<GameObject>(RoR2_DLC1_CritGlassesVoid.CritGlassesVoidExecuteEffect_prefab).OnSuccess(effectPrefab =>
             {
-                GameObject effectPrefab = handle.Result;
-
                 Transform fakeDamageNumbersTransform = effectPrefab.transform.Find("FakeDamageNumbers");
                 if (fakeDamageNumbersTransform)
                 {
-                    FlipParticleSystemIfMirrored flipParticleSystemComponent = fakeDamageNumbersTransform.gameObject.AddComponent<FlipParticleSystemIfMirrored>();
-
-                    _addedComponents.Add(flipParticleSystemComponent);
+                    fakeDamageNumbersTransform.gameObject.AddComponent<FlipParticleSystemIfMirrored>();
                 }
                 else
                 {
                     Log.Error("Failed to find fake damage number emitter on CritGlassesVoidExecuteEffect");
                 }
-            };
-        }
-
-        public static void Undo()
-        {
-            foreach (MonoBehaviour component in _addedComponents)
-            {
-                GameObject.Destroy(component);
-            }
-
-            _addedComponents.Clear();
+            });
         }
     }
 }

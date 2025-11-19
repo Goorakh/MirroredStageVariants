@@ -3,7 +3,7 @@
 namespace MirroredStageVariants.Components
 {
     [DisallowMultipleComponent]
-    public class FlipParticleSystemIfMirrored : MonoBehaviour
+    public sealed class FlipParticleSystemIfMirrored : MonoBehaviour
     {
         ParticleSystemRenderer _particleRenderer;
 

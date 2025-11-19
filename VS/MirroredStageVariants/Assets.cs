@@ -16,7 +16,7 @@ namespace MirroredStageVariants
             UnityEngine.Object Asset { get; set; }
         }
 
-        class AssetLoadOperation(string assetName, AssetBundleRequest loadRequest, IAssetReference assetReference)
+        sealed class AssetLoadOperation(string assetName, AssetBundleRequest loadRequest, IAssetReference assetReference)
         {
             public string AssetName { get; } = assetName;
 
@@ -42,7 +42,7 @@ namespace MirroredStageVariants
             }
         }
 
-        class AssetReference<T> : IAssetReference where T : UnityEngine.Object
+        sealed class AssetReference<T> : IAssetReference where T : UnityEngine.Object
         {
             public T Asset;
 
@@ -67,16 +67,14 @@ namespace MirroredStageVariants
         [SystemInitializer]
         static IEnumerator Init()
         {
-            string assetBundlePath = Path.Combine(Path.GetDirectoryName(Main.Instance.Info.Location), "mirror_assets");
+            string assetBundlePath = Path.Combine(Path.GetDirectoryName(MirroredStageVariantsPlugin.Instance.Info.Location), "mirror_assets");
             if (!File.Exists(assetBundlePath))
             {
                 Log.Error($"Assets file not found, expected path: {assetBundlePath}");
                 yield break;
             }
 
-#if DEBUG
             Log.Debug($"Loading AssetBundle '{assetBundlePath}'");
-#endif
 
             AssetBundleCreateRequest assetBundleLoad = AssetBundle.LoadFromFileAsync(assetBundlePath);
             while (!assetBundleLoad.isDone)
@@ -106,9 +104,7 @@ namespace MirroredStageVariants
             loadOperations.Add(getLoadOperation("DebugDrawUV", _debugDrawUVRef));
 #endif
 
-#if DEBUG
             Log.Debug($"Loading {loadOperations.Count} asset(s)...");
-#endif
 
             while (loadOperations.Count > 0)
             {
@@ -119,9 +115,7 @@ namespace MirroredStageVariants
                     loadOperation.Update();
                     if (loadOperation.IsDone)
                     {
-#if DEBUG
                         Log.Debug($"Finished loading asset '{loadOperation.AssetName}'");
-#endif
 
                         loadOperations.RemoveAt(i);
                     }

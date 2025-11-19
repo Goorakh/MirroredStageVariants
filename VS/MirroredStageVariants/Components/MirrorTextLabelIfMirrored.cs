@@ -4,21 +4,21 @@ using UnityEngine;
 namespace MirroredStageVariants.Components
 {
     [DisallowMultipleComponent]
-    public class MirrorTextLabelIfMirrored : MonoBehaviour
+    public sealed class MirrorTextLabelIfMirrored : MonoBehaviour
     {
         bool _isRenderingAsMirrored;
         Vector3 _originalScale;
 
         void OnEnable()
         {
-            CameraEvents.OnPreRender += onPreRender;
-            CameraEvents.OnPostRender += onPostRender;
+            Camera.onPreRender += onPreRender;
+            Camera.onPostRender += onPostRender;
         }
 
         void OnDisable()
         {
-            CameraEvents.OnPreRender -= onPreRender;
-            CameraEvents.OnPostRender -= onPostRender;
+            Camera.onPreRender -= onPreRender;
+            Camera.onPostRender -= onPostRender;
         }
 
         void onPreRender(Camera cam)

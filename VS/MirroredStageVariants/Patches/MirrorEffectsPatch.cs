@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace MirroredStageVariants.Patches
 {
-    internal class MirrorEffectsPatch
+    static class MirrorEffectsPatch
     {
         [SystemInitializer(typeof(EffectCatalog))]
         static void Init()
@@ -30,9 +30,7 @@ namespace MirroredStageVariants.Patches
                 {
                     if (textLabel.gameObject.layer == LayerIndex.uiWorldSpace.intVal)
                     {
-#if DEBUG
                         Log.Debug($"UI Worldspace text: {Util.BuildPrefabTransformPath(effect.prefab.transform, textLabel.transform, false, true)} ({i})");
-#endif
 
                         if (!textLabel.GetComponent<MirrorTextLabelIfMirrored>())
                         {

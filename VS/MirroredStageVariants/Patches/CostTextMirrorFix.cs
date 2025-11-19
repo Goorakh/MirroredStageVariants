@@ -1,8 +1,9 @@
 ﻿using MirroredStageVariants.Components;
+using MirroredStageVariants.Utils;
+using MirroredStageVariants.Utils.Extensions;
 using RoR2;
+using RoR2BepInExPack.GameAssetPathsBetter;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
-using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace MirroredStageVariants.Patches
 {
@@ -11,14 +12,11 @@ namespace MirroredStageVariants.Patches
         [SystemInitializer]
         static void Init()
         {
-            AsyncOperationHandle<GameObject> costHologramLoadHandle = Addressables.LoadAssetAsync<GameObject>("RoR2/Base/Common/VFX/CostHologramContent.prefab");
-            costHologramLoadHandle.Completed += handle =>
+            AssetLoadUtils.LoadAssetAsync<GameObject>(RoR2_Base_Common_VFX.CostHologramContent_prefab).OnSuccess(costHologramContent =>
             {
-                GameObject costHologramContent = handle.Result;
-
                 ScaleOnAwakeIfMirrored scaleOnAwakeIfMirrored = costHologramContent.AddComponent<ScaleOnAwakeIfMirrored>();
                 scaleOnAwakeIfMirrored.ScaleMultiplier = new Vector3(-1f, 1f, 1f);
-            };
+            });
         }
     }
 }

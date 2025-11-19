@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using MirroredStageVariants.Components;
 using MonoMod.RuntimeDetour;
+using RoR2;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,11 +13,9 @@ namespace MirroredStageVariants.Patches
 
         static SetObjectPositionDelegate _origSetPosition;
 
-        static readonly List<IDetour> _audioEngineHooks = [];
-
         static readonly Dictionary<ulong, AkObjectData> _akObjects = [];
 
-        class AkObjectData
+        sealed class AkObjectData
         {
             public readonly ulong Id;
 
@@ -91,36 +90,19 @@ namespace MirroredStageVariants.Patches
             }
         }
 
-        public static void Apply()
+        [SystemInitializer]
+        static void Init()
         {
             NativeDetour setObjectPositionHook = new NativeDetour(SymbolExtensions.GetMethodInfo(() => AkSoundEnginePINVOKE.CSharp_SetObjectPosition(default, default, default, default)), SymbolExtensions.GetMethodInfo(() => AkSoundEngine_SetObjectPosition(default, default, default, default)));
             _origSetPosition = setObjectPositionHook.GenerateTrampoline<SetObjectPositionDelegate>();
 
-            _audioEngineHooks.Add(setObjectPositionHook);
+            new Hook(SymbolExtensions.GetMethodInfo(() => AkSoundEngine.PostRegisterGameObjUserHook(default, default, default)), AkSoundEngine_PostRegisterGameObjUserHook);
 
-            _audioEngineHooks.Add(new Hook(SymbolExtensions.GetMethodInfo(() => AkSoundEngine.PostRegisterGameObjUserHook(default, default, default)), AkSoundEngine_PostRegisterGameObjUserHook));
+            new Hook(SymbolExtensions.GetMethodInfo(() => AkSoundEngine.PostUnregisterGameObjUserHook(default, default, default)), AkSoundEngine_PostUnregisterGameObjUserHook);
 
-            _audioEngineHooks.Add(new Hook(SymbolExtensions.GetMethodInfo(() => AkSoundEngine.PostUnregisterGameObjUserHook(default, default, default)), AkSoundEngine_PostUnregisterGameObjUserHook));
-
-            _audioEngineHooks.Add(new Hook(SymbolExtensions.GetMethodInfo(() => AkSoundEngine.ClearRegisteredGameObjects()), AkSoundEngine_ClearRegisteredGameObjects));
+            new Hook(SymbolExtensions.GetMethodInfo(() => AkSoundEngine.ClearRegisteredGameObjects()), AkSoundEngine_ClearRegisteredGameObjects);
 
             MirrorCamera.OnMirrorTransformationChanged += onCameraMirrorTransformationChanged;
-        }
-
-        public static void Undo()
-        {
-            foreach (IDetour audioEngineHook in _audioEngineHooks)
-            {
-                audioEngineHook?.Dispose();
-            }
-
-            _audioEngineHooks.Clear();
-
-            _origSetPosition = null;
-
-            _akObjects.Clear();
-
-            MirrorCamera.OnMirrorTransformationChanged -= onCameraMirrorTransformationChanged;
         }
 
         static void onCameraMirrorTransformationChanged()

@@ -4,7 +4,7 @@ using UnityEngine.Networking;
 
 namespace MirroredStageVariants.Components
 {
-    public class StageMirrorController : MonoBehaviour
+    public sealed class StageMirrorController : MonoBehaviour
     {
         [SystemInitializer]
         static void Init()
@@ -35,10 +35,10 @@ namespace MirroredStageVariants.Components
                     return false;
             }
 
-            if (Main.MirrorHiddenRealms.Value)
+            if (MirroredStageVariantsPlugin.MirrorHiddenRealms.Value)
                 return true;
 
-            return scene.stageOrder > 0 && scene.stageOrder <= Run.stagesPerLoop;
+            return scene.stageOrder > 0 && scene.stageOrder <= 5;
         }
 
         public static bool CurrentlyIsMirrored
@@ -49,7 +49,7 @@ namespace MirroredStageVariants.Components
                     return false;
 
                 if (!_instance)
-                    return Main.MirrorNonStages.Value;
+                    return MirroredStageVariantsPlugin.MirrorNonStages.Value;
 
                 if (Commands.OverrideStageIsMirrored.HasValue)
                     return Commands.OverrideStageIsMirrored.Value;
@@ -73,27 +73,17 @@ namespace MirroredStageVariants.Components
         void Awake()
         {
             Xoroshiro128Plus rng = RoR2Application.rng;
-            Run instance = Run.instance;
 
-            if (instance)
+            if (Run.instance)
             {
-                ulong seed = NetworkServer.active && NetworkServer.dontListen ? instance.seed
-                    : unchecked((ulong)instance.NetworkstartTimeUtc._binaryValue);
+                ulong seed = (ulong)(Run.instance.NetworkstartTimeUtc._binaryValue + Run.instance.stageClearCount);
 
-                seed ^= Hash128.Compute(SceneCatalog.mostRecentSceneDef.cachedName).u64_0;
-                rng = new(seed);
-
-                for (int i = 0; i < instance.stageClearCount; i++)
-                {
-                    rng.Next();
-                }
+                rng = new Xoroshiro128Plus(seed);
             }
 
-            IsMirrored = rng.nextNormalizedFloat <= Main.MirrorChance.Value / 100f;
+            IsMirrored = rng.nextNormalizedFloat <= MirroredStageVariantsPlugin.MirrorChance.Value / 100f;
 
-#if DEBUG
             Log.Debug($"mirrored={IsMirrored}");
-#endif
         }
     }
 }

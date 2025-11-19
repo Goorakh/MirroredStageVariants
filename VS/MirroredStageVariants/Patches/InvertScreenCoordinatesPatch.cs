@@ -1,6 +1,7 @@
 ﻿using MirroredStageVariants.Components;
 using MirroredStageVariants.Utils;
 using MonoMod.RuntimeDetour;
+using RoR2;
 using UnityEngine;
 
 namespace MirroredStageVariants.Patches
@@ -11,37 +12,17 @@ namespace MirroredStageVariants.Patches
 
         delegate Ray ScreenRayDelegate(Camera self, Vector2 pos, Camera.MonoOrStereoscopicEye eye);
 
-        static Hook Camera_WorldToScreenPoint_Hook;
-        static Hook Camera_WorldToViewportPoint_Hook;
-
-        static Hook Camera_ViewportToWorldPoint_Hook;
-        static Hook Camera_ScreenToWorldPoint_Hook;
-
-        static Hook Camera_ViewportPointToRay_Hook;
-        static Hook Camera_ScreenPointToRay_Hook;
-
-        public static void Apply()
+        [SystemInitializer]
+        static void Init()
         {
-            Camera_WorldToScreenPoint_Hook = new Hook(() => default(Camera).WorldToScreenPoint(default, default), invertPixelCoordinateResult);
-            Camera_WorldToViewportPoint_Hook = new Hook(() => default(Camera).WorldToViewportPoint(default, default), invertNormalizedCoordinateResult);
+            new Hook(() => default(Camera).WorldToScreenPoint(default, default), invertPixelCoordinateResult);
+            new Hook(() => default(Camera).WorldToViewportPoint(default, default), invertNormalizedCoordinateResult);
 
-            Camera_ScreenToWorldPoint_Hook = new Hook(() => default(Camera).ScreenToWorldPoint(default, default), invertPixelCoordinateInput);
-            Camera_ViewportToWorldPoint_Hook = new Hook(() => default(Camera).ViewportToWorldPoint(default, default), invertNormalizedCoordinateInput);
+            new Hook(() => default(Camera).ScreenToWorldPoint(default, default), invertPixelCoordinateInput);
+            new Hook(() => default(Camera).ViewportToWorldPoint(default, default), invertNormalizedCoordinateInput);
 
-            Camera_ScreenPointToRay_Hook = new Hook(() => default(Camera).ScreenPointToRay(default(Vector2), default), invertRayPixelCoordinateInput);
-            Camera_ViewportPointToRay_Hook = new Hook(() => default(Camera).ViewportPointToRay(default(Vector2), default), invertRayNormalizedCoordinateInput);
-        }
-
-        public static void Undo()
-        {
-            Camera_WorldToScreenPoint_Hook?.Undo();
-            Camera_WorldToViewportPoint_Hook?.Undo();
-
-            Camera_ViewportToWorldPoint_Hook?.Undo();
-            Camera_ScreenToWorldPoint_Hook?.Undo();
-
-            Camera_ViewportPointToRay_Hook?.Undo();
-            Camera_ScreenPointToRay_Hook?.Undo();
+            new Hook(() => default(Camera).ScreenPointToRay(default(Vector2), default), invertRayPixelCoordinateInput);
+            new Hook(() => default(Camera).ViewportPointToRay(default(Vector2), default), invertRayNormalizedCoordinateInput);
         }
 
         static bool isMirrored(Camera camera)

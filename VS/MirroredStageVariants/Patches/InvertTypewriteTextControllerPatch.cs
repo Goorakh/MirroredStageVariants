@@ -5,6 +5,7 @@ using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using MonoMod.RuntimeDetour;
 using MonoMod.Utils;
+using RoR2;
 using RoR2.UI;
 using System;
 using System.Linq;
@@ -16,9 +17,8 @@ namespace MirroredStageVariants.Patches
 {
     static class InvertTypewriteTextControllerPatch
     {
-        static ILHook TypewriteTextController_SetTypingTime_UpdateCurrentLabel_Hook;
-
-        public static void Apply()
+        [SystemInitializer]
+        static void Init()
         {
             On.RoR2.UI.AssignStageToken.Start += AssignStageToken_Start;
             On.RoR2.UI.TypewriteTextController.SetTypingTime += TypewriteTextController_SetTypingTime;
@@ -27,23 +27,13 @@ namespace MirroredStageVariants.Patches
 
             if (TypewriteTextController_SetTypingTime_UpdateCurrentLabel_MI is not null)
             {
-                TypewriteTextController_SetTypingTime_UpdateCurrentLabel_Hook = new ILHook(TypewriteTextController_SetTypingTime_UpdateCurrentLabel_MI, TypewriteTextController_SetTypingTime_UpdateCurrentLabel);
+                new ILHook(TypewriteTextController_SetTypingTime_UpdateCurrentLabel_MI, TypewriteTextController_SetTypingTime_UpdateCurrentLabel);
             }
             else
             {
                 Log.Error("Failed to find local function UpdateCurrentLabel");
             }
         }
-
-        public static void Undo()
-        {
-            On.RoR2.UI.AssignStageToken.Start -= AssignStageToken_Start;
-            On.RoR2.UI.TypewriteTextController.SetTypingTime -= TypewriteTextController_SetTypingTime;
-
-            TypewriteTextController_SetTypingTime_UpdateCurrentLabel_Hook?.Dispose();
-            TypewriteTextController_SetTypingTime_UpdateCurrentLabel_Hook = null;
-        }
-
         static void AssignStageToken_Start(On.RoR2.UI.AssignStageToken.orig_Start orig, AssignStageToken self)
         {
             InvertTypewriterInfo invertTypewriterInfo = self.gameObject.AddComponent<InvertTypewriterInfo>();
@@ -144,7 +134,7 @@ namespace MirroredStageVariants.Patches
         }
 
         [DisallowMultipleComponent]
-        class InvertTypewriterInfo : MonoBehaviour
+        sealed class InvertTypewriterInfo : MonoBehaviour
         {
             public static InvertTypewriterInfo Current;
 

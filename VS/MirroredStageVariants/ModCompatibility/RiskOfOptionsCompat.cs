@@ -11,15 +11,15 @@ namespace MirroredStageVariants.ModCompatibility
 {
     static class RiskOfOptionsCompat
     {
-        public static bool IsEnabled => Chainloader.PluginInfos.ContainsKey("com.rune580.riskofoptions");
+        public static bool IsEnabled => Chainloader.PluginInfos.ContainsKey(RiskOfOptions.PluginInfo.PLUGIN_GUID);
 
-        [MethodImpl(MethodImplOptions.NoInlining)]
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         public static void AddConfigOptions()
         {
-            const string MOD_GUID = Main.PluginGUID;
+            const string MOD_GUID = MirroredStageVariantsPlugin.PluginGUID;
             const string MOD_NAME = "Mirrored Stage Variants";
 
-            ModSettingsManager.AddOption(new StepSliderOption(Main.MirrorChance, new StepSliderConfig
+            ModSettingsManager.AddOption(new StepSliderOption(MirroredStageVariantsPlugin.MirrorChance, new StepSliderConfig
             {
                 formatString = "{0}%",
                 min = 0f,
@@ -27,14 +27,14 @@ namespace MirroredStageVariants.ModCompatibility
                 increment = 0.1f
             }), MOD_GUID, MOD_NAME);
 
-            ModSettingsManager.AddOption(new CheckBoxOption(Main.MirrorNonStages), MOD_GUID, MOD_NAME);
-            ModSettingsManager.AddOption(new CheckBoxOption(Main.MirrorHiddenRealms), MOD_GUID, MOD_NAME);
+            ModSettingsManager.AddOption(new CheckBoxOption(MirroredStageVariantsPlugin.MirrorNonStages), MOD_GUID, MOD_NAME);
+            ModSettingsManager.AddOption(new CheckBoxOption(MirroredStageVariantsPlugin.MirrorHiddenRealms), MOD_GUID, MOD_NAME);
 
             ModSettingsManager.SetModDescription($"Options for {MOD_NAME}", MOD_GUID, MOD_NAME);
 
             FileInfo iconFile = null;
 
-            DirectoryInfo dir = new DirectoryInfo(Path.GetDirectoryName(Main.Instance.Info.Location));
+            DirectoryInfo dir = new DirectoryInfo(Path.GetDirectoryName(MirroredStageVariantsPlugin.Instance.Info.Location));
             do
             {
                 FileInfo[] files = dir.GetFiles("icon.png", SearchOption.TopDirectoryOnly);
@@ -53,7 +53,7 @@ namespace MirroredStageVariants.ModCompatibility
                 if (iconTexture.LoadImage(File.ReadAllBytes(iconFile.FullName)))
                 {
                     Sprite iconSprite = Sprite.Create(iconTexture, new Rect(0f, 0f, iconTexture.width, iconTexture.height), new Vector2(0.5f, 0.5f));
-                    iconSprite.name = $"{Main.PluginName}Icon";
+                    iconSprite.name = $"{MirroredStageVariantsPlugin.PluginName}Icon";
 
                     ModSettingsManager.SetModIcon(iconSprite, MOD_GUID, MOD_NAME);
                 }

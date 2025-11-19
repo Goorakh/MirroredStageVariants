@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace MirroredStageVariants.Components
 {
-    class MirrorCamera : MonoBehaviour
+    public sealed class MirrorCamera : MonoBehaviour
     {
         [SystemInitializer]
         static void Init()

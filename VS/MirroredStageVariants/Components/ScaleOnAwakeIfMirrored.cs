@@ -3,7 +3,7 @@
 namespace MirroredStageVariants.Components
 {
     [DefaultExecutionOrder(-1)]
-    public class ScaleOnAwakeIfMirrored : MonoBehaviour
+    public sealed class ScaleOnAwakeIfMirrored : MonoBehaviour
     {
         public Vector3 ScaleMultiplier = Vector3.one;
 

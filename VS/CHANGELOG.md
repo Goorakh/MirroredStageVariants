@@ -1,3 +1,7 @@
+**1.2.5 Changes:**
+
+* Updated for Alloyed Collective
+
 **1.2.4 Changes:**
 
 * Fixed Seeker Meditate left/right inputs being flipped if the stage is mirrored

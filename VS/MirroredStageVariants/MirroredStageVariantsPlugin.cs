@@ -1,21 +1,20 @@
 using BepInEx;
 using BepInEx.Configuration;
 using MirroredStageVariants.ModCompatibility;
-using MirroredStageVariants.Patches;
 using System.Diagnostics;
 
 namespace MirroredStageVariants
 {
     [BepInPlugin(PluginGUID, PluginName, PluginVersion)]
-    [BepInDependency("com.rune580.riskofoptions", BepInDependency.DependencyFlags.SoftDependency)]
-    public class Main : BaseUnityPlugin
+    [BepInDependency(RiskOfOptions.PluginInfo.PLUGIN_GUID, BepInDependency.DependencyFlags.SoftDependency)]
+    public sealed class MirroredStageVariantsPlugin : BaseUnityPlugin
     {
         public const string PluginGUID = PluginAuthor + "." + PluginName;
         public const string PluginAuthor = "Gorakh";
         public const string PluginName = "MirroredStageVariants";
-        public const string PluginVersion = "1.2.4";
+        public const string PluginVersion = "1.2.5";
 
-        internal static Main Instance { get; private set; }
+        internal static MirroredStageVariantsPlugin Instance { get; private set; }
 
         public static ConfigEntry<float> MirrorChance { get; private set; }
 
@@ -33,28 +32,12 @@ namespace MirroredStageVariants
 
             initConfigs(Config);
 
-            MirrorAudioPatch.Apply();
-            InvertScreenCoordinatesPatch.Apply();
-            InvertInputPatch.Apply();
-            InvertScreenBlurPatch.Apply();
-            InvertDamageNumberPositionsPatch.Apply();
-            InvertTypewriteTextControllerPatch.Apply();
-            HideStunEffect.Apply();
-
             stopwatch.Stop();
-            Log.Message_NoCallerPrefix($"Initialized in {stopwatch.Elapsed.TotalSeconds:F2}s");
+            Log.Message_NoCallerPrefix($"Initialized in {stopwatch.Elapsed.TotalMilliseconds:F0}ms");
         }
 
         void OnDestroy()
         {
-            MirrorAudioPatch.Undo();
-            InvertScreenCoordinatesPatch.Undo();
-            InvertInputPatch.Undo();
-            InvertScreenBlurPatch.Undo();
-            InvertDamageNumberPositionsPatch.Undo();
-            InvertTypewriteTextControllerPatch.Undo();
-            HideStunEffect.Undo();
-
             Instance = SingletonHelper.Unassign(Instance, this);
         }
 
