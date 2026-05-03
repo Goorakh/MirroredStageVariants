@@ -4,6 +4,7 @@ using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using RoR2;
 using RoR2.CameraModes;
+using System;
 using UnityEngine;
 
 namespace MirroredStageVariants.Patches
@@ -13,19 +14,18 @@ namespace MirroredStageVariants.Patches
         [SystemInitializer]
         static void Init()
         {
-            On.RoR2.CameraModes.CameraModeBase.CollectLookInput += CameraModeBase_CollectLookInput;
+            On.RoR2.CameraModes.CameraModeBase.ApplyLookInput += CameraModeBase_ApplyLookInput;
 
             IL.RoR2.PlayerCharacterMasterController.Update += PlayerCharacterMasterController_Update;
         }
 
-        static void CameraModeBase_CollectLookInput(On.RoR2.CameraModes.CameraModeBase.orig_CollectLookInput orig, CameraModeBase self, ref CameraModeBase.CameraModeContext context, out CameraModeBase.CollectLookInputResult result)
+        private static void CameraModeBase_ApplyLookInput(On.RoR2.CameraModes.CameraModeBase.orig_ApplyLookInput orig, CameraModeBase self, ref CameraModeBase.CameraModeContext context, ref CameraModeBase.ApplyLookInputArgs args)
         {
-            orig(self, ref context, out result);
-
             if (StageMirrorController.CurrentlyIsMirrored)
             {
-                result.lookInput.x *= -1f;
+                args.lookInput.x *= -1f;
             }
+            orig(self, ref context, ref args);
         }
 
         static void PlayerCharacterMasterController_Update(ILContext il)
