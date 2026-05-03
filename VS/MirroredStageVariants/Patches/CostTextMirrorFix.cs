@@ -12,7 +12,7 @@ namespace MirroredStageVariants.Patches
         [SystemInitializer]
         static void Init()
         {
-            AssetLoadUtils.LoadAssetAsync<GameObject>(RoR2_Base_Common_VFX.CostHologramContent_prefab).OnSuccess(costHologramContent =>
+            AddressableUtil.LoadAssetAsync<GameObject>(RoR2_Base_Common_VFX.CostHologramContent_prefab).OnSuccess(costHologramContent =>
             {
                 ScaleOnAwakeIfMirrored scaleOnAwakeIfMirrored = costHologramContent.AddComponent<ScaleOnAwakeIfMirrored>();
                 scaleOnAwakeIfMirrored.ScaleMultiplier = new Vector3(-1f, 1f, 1f);

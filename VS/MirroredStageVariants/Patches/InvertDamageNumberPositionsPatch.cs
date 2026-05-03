@@ -12,12 +12,12 @@ namespace MirroredStageVariants.Patches
         [SystemInitializer]
         static void Init()
         {
-            AssetLoadUtils.LoadAssetAsync<GameObject>(RoR2_Base_Core.DamageNumberManager_prefab).OnSuccess(damageNumberManager =>
+            AddressableUtil.LoadAssetAsync<GameObject>(RoR2_Base_Core.DamageNumberManager_prefab).OnSuccess(damageNumberManager =>
             {
                 damageNumberManager.AddComponent<FlipParticleSystemIfMirrored>();
             });
 
-            AssetLoadUtils.LoadAssetAsync<GameObject>(RoR2_DLC1_CritGlassesVoid.CritGlassesVoidExecuteEffect_prefab).OnSuccess(effectPrefab =>
+            AddressableUtil.LoadAssetAsync<GameObject>(RoR2_DLC1_CritGlassesVoid.CritGlassesVoidExecuteEffect_prefab).OnSuccess(effectPrefab =>
             {
                 Transform fakeDamageNumbersTransform = effectPrefab.transform.Find("FakeDamageNumbers");
                 if (fakeDamageNumbersTransform)

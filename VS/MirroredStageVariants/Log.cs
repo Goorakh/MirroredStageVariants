@@ -40,7 +40,7 @@ namespace MirroredStageVariants
             _logSource = logSource;
         }
 
-        static string buildCallerLogString(string callerPath, string callerMemberName, int callerLineNumber, object data)
+        static string buildCallerLogString(string callerPath, string callerMemberName, int callerLineNumber, string data)
         {
             lock (_stringBuilderLock)
             {
@@ -54,74 +54,74 @@ namespace MirroredStageVariants
         }
 
         [Conditional("DEBUG")]
-        internal static void Debug(object data, [CallerFilePath] string callerPath = "", [CallerMemberName] string callerMemberName = "", [CallerLineNumber] int callerLineNumber = -1)
+        internal static void Debug(string data, [CallerFilePath] string callerPath = "", [CallerMemberName] string callerMemberName = "", [CallerLineNumber] int callerLineNumber = -1)
         {
             _logSource.LogDebug(buildCallerLogString(callerPath, callerMemberName, callerLineNumber, data));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Conditional("DEBUG")]
-        internal static void Debug_NoCallerPrefix(object data)
+        internal static void Debug_NoCallerPrefix(string data)
         {
             _logSource.LogDebug(data);
         }
 
-        internal static void Error(object data, [CallerFilePath] string callerPath = "", [CallerMemberName] string callerMemberName = "", [CallerLineNumber] int callerLineNumber = -1)
+        internal static void Error(string data, [CallerFilePath] string callerPath = "", [CallerMemberName] string callerMemberName = "", [CallerLineNumber] int callerLineNumber = -1)
         {
             _logSource.LogError(buildCallerLogString(callerPath, callerMemberName, callerLineNumber, data));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void Error_NoCallerPrefix(object data)
+        internal static void Error_NoCallerPrefix(string data)
         {
             _logSource.LogError(data);
         }
 
-        internal static void Fatal(object data, [CallerFilePath] string callerPath = "", [CallerMemberName] string callerMemberName = "", [CallerLineNumber] int callerLineNumber = -1)
+        internal static void Fatal(string data, [CallerFilePath] string callerPath = "", [CallerMemberName] string callerMemberName = "", [CallerLineNumber] int callerLineNumber = -1)
         {
             _logSource.LogFatal(buildCallerLogString(callerPath, callerMemberName, callerLineNumber, data));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void Fatal_NoCallerPrefix(object data)
+        internal static void Fatal_NoCallerPrefix(string data)
         {
             _logSource.LogFatal(data);
         }
 
-        internal static void Info(object data, [CallerFilePath] string callerPath = "", [CallerMemberName] string callerMemberName = "", [CallerLineNumber] int callerLineNumber = -1)
+        internal static void Info(string data, [CallerFilePath] string callerPath = "", [CallerMemberName] string callerMemberName = "", [CallerLineNumber] int callerLineNumber = -1)
         {
             _logSource.LogInfo(buildCallerLogString(callerPath, callerMemberName, callerLineNumber, data));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void Info_NoCallerPrefix(object data)
+        internal static void Info_NoCallerPrefix(string data)
         {
             _logSource.LogInfo(data);
         }
 
-        internal static void Message(object data, [CallerFilePath] string callerPath = "", [CallerMemberName] string callerMemberName = "", [CallerLineNumber] int callerLineNumber = -1)
+        internal static void Message(string data, [CallerFilePath] string callerPath = "", [CallerMemberName] string callerMemberName = "", [CallerLineNumber] int callerLineNumber = -1)
         {
             _logSource.LogMessage(buildCallerLogString(callerPath, callerMemberName, callerLineNumber, data));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void Message_NoCallerPrefix(object data)
+        internal static void Message_NoCallerPrefix(string data)
         {
             _logSource.LogMessage(data);
         }
 
-        internal static void Warning(object data, [CallerFilePath] string callerPath = "", [CallerMemberName] string callerMemberName = "", [CallerLineNumber] int callerLineNumber = -1)
+        internal static void Warning(string data, [CallerFilePath] string callerPath = "", [CallerMemberName] string callerMemberName = "", [CallerLineNumber] int callerLineNumber = -1)
         {
             _logSource.LogWarning(buildCallerLogString(callerPath, callerMemberName, callerLineNumber, data));
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void Warning_NoCallerPrefix(object data)
+        internal static void Warning_NoCallerPrefix(string data)
         {
             _logSource.LogWarning(data);
         }
 
-        internal static void LogType(LogLevel level, object data, [CallerFilePath] string callerPath = "", [CallerMemberName] string callerMemberName = "", [CallerLineNumber] int callerLineNumber = -1)
+        internal static void LogType(LogLevel level, string data, [CallerFilePath] string callerPath = "", [CallerMemberName] string callerMemberName = "", [CallerLineNumber] int callerLineNumber = -1)
         {
 #if !DEBUG
             if ((level & LogLevel.Debug) != 0)
@@ -132,7 +132,7 @@ namespace MirroredStageVariants
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal static void LogType_NoCallerPrefix(LogLevel level, object data)
+        internal static void LogType_NoCallerPrefix(LogLevel level, string data)
         {
 #if !DEBUG
             if ((level & LogLevel.Debug) != 0)

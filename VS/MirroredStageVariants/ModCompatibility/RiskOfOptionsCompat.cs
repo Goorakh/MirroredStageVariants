@@ -21,7 +21,7 @@ namespace MirroredStageVariants.ModCompatibility
 
             ModSettingsManager.AddOption(new StepSliderOption(MirroredStageVariantsPlugin.MirrorChance, new StepSliderConfig
             {
-                formatString = "{0}%",
+                FormatString = "{0}%",
                 min = 0f,
                 max = 100f,
                 increment = 0.1f

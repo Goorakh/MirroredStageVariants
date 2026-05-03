@@ -12,7 +12,7 @@ namespace MirroredStageVariants.Patches
         [SystemInitializer]
         static void Init()
         {
-            AssetLoadUtils.LoadAssetAsync<GameObject>(RoR2_Base_Common_VFX.StunVfx_prefab).OnSuccess(stunVfx =>
+            AddressableUtil.LoadAssetAsync<GameObject>(RoR2_Base_Common_VFX.StunVfx_prefab).OnSuccess(stunVfx =>
             {
                 TextMeshPro stunVfxText = stunVfx.GetComponentInChildren<TextMeshPro>();
                 if (stunVfxText)
