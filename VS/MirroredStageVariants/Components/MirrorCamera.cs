@@ -70,5 +70,10 @@ namespace MirroredStageVariants.Components
                 Graphics.Blit(source, destination);
             }
         }
+
+        public static bool IsMirrored(Camera camera)
+        {
+            return StageMirrorController.CurrentlyIsMirrored && camera && camera.GetComponent<MirrorCamera>();
+        }
     }
 }

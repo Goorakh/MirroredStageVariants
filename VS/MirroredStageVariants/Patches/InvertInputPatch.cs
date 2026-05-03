@@ -2,9 +2,9 @@
 using MirroredStageVariants.Components;
 using Mono.Cecil.Cil;
 using MonoMod.Cil;
+using MonoMod.RuntimeDetour;
 using RoR2;
-using RoR2.CameraModes;
-using System;
+using System.Reflection;
 using UnityEngine;
 
 namespace MirroredStageVariants.Patches
@@ -14,18 +14,56 @@ namespace MirroredStageVariants.Patches
         [SystemInitializer]
         static void Init()
         {
-            On.RoR2.CameraModes.CameraModeBase.ApplyLookInput += CameraModeBase_ApplyLookInput;
+            MethodInfo cameraRigEarlyUpdateMethod = typeof(CameraRigController).GetMethod(nameof(CameraRigController.EarlyUpdate), (BindingFlags)(~0b0));
+            if (cameraRigEarlyUpdateMethod != null)
+            {
+                new Hook(cameraRigEarlyUpdateMethod, new On.RoR2.CameraRigController.hook_EarlyUpdate(CameraRigController_EarlyUpdate), new HookConfig
+                {
+                    Priority = 100,
+                });
+            }
+            else
+            {
+                Log.Error("Failed to find method CameraRigController.EarlyUpdate");
+            }
 
             IL.RoR2.PlayerCharacterMasterController.Update += PlayerCharacterMasterController_Update;
         }
 
-        private static void CameraModeBase_ApplyLookInput(On.RoR2.CameraModes.CameraModeBase.orig_ApplyLookInput orig, CameraModeBase self, ref CameraModeBase.CameraModeContext context, ref CameraModeBase.ApplyLookInputArgs args)
+        static void CameraRigController_EarlyUpdate(On.RoR2.CameraRigController.orig_EarlyUpdate orig, CameraRigController self)
         {
-            if (StageMirrorController.CurrentlyIsMirrored)
+            // This profile can potentially be outdated since it is assigned inside of the orig() call,
+            // but they delay will be at most a single update tick, so probably fine
+            UserProfile userProfile = self.cameraModeContext.viewerInfo.userProfile;
+            if (userProfile == null || !MirrorCamera.IsMirrored(self.sceneCam))
             {
-                args.lookInput.x *= -1f;
+                orig(self);
+                return;
             }
-            orig(self, ref context, ref args);
+
+            static bool invertAndReturnOriginal(ref bool value)
+            {
+                bool origValue = value;
+                value = !value;
+                return origValue;
+            }
+
+            bool origMouseLookInvertX = invertAndReturnOriginal(ref userProfile.mouseLookInvertX);
+            bool origStickLookInvertX = invertAndReturnOriginal(ref userProfile.stickLookInvertX);
+            bool origGyroLookInvertX = invertAndReturnOriginal(ref userProfile.gyroLookInvertX);
+
+            using var _ = new InvertScreenCoordinatesPatch.DisableScope();
+
+            try
+            {
+                orig(self);
+            }
+            finally
+            {
+                userProfile.mouseLookInvertX = origMouseLookInvertX;
+                userProfile.stickLookInvertX = origStickLookInvertX;
+                userProfile.gyroLookInvertX = origGyroLookInvertX;
+            }
         }
 
         static void PlayerCharacterMasterController_Update(ILContext il)
@@ -52,11 +90,23 @@ namespace MirroredStageVariants.Patches
                         Log.Error("Failed to find raw move state call");
                     }
 
+                    cursor.Emit(OpCodes.Ldarg_0);
                     cursor.Emit(OpCodes.Ldloca, moveInputLocalIndex);
                     cursor.EmitDelegate(tryMirrorMoveInput);
-                    static void tryMirrorMoveInput(ref Vector2 moveInput)
+                    static void tryMirrorMoveInput(PlayerCharacterMasterController playerMasterController, ref Vector2 moveInput)
                     {
-                        if (StageMirrorController.CurrentlyIsMirrored)
+                        if (!playerMasterController)
+                            return;
+
+                        NetworkUser networkUser = playerMasterController.networkUser;
+                        if (!networkUser)
+                            return;
+
+                        CameraRigController cameraRigController = networkUser.cameraRigController;
+                        if (!cameraRigController)
+                            return;
+
+                        if (MirrorCamera.IsMirrored(cameraRigController.sceneCam))
                         {
                             moveInput.x *= -1f;
                         }

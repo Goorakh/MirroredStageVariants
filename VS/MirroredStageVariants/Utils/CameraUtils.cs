@@ -25,7 +25,7 @@ namespace MirroredStageVariants.Utils
                     cameraRigController = camera.GetComponentInParent<CameraRigController>();
                 }
 
-                if (cameraRigController && cameraRigController.sceneCam && cameraRigController.sceneCam.GetComponent<MirrorCamera>())
+                if (cameraRigController && MirrorCamera.IsMirrored(cameraRigController.sceneCam))
                 {
                     return true;
                 }

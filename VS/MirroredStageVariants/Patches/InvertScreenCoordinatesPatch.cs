@@ -8,6 +8,20 @@ namespace MirroredStageVariants.Patches
 {
     static class InvertScreenCoordinatesPatch
     {
+        static uint _disablePatchCount;
+        public readonly ref struct DisableScope
+        {
+            public DisableScope()
+            {
+                _disablePatchCount++;
+            }
+
+            public readonly void Dispose()
+            {
+                _disablePatchCount--;
+            }
+        }
+
         delegate Vector3 ScreenCoordinateDelegate(Camera self, Vector3 position, Camera.MonoOrStereoscopicEye eye);
 
         delegate Ray ScreenRayDelegate(Camera self, Vector2 pos, Camera.MonoOrStereoscopicEye eye);
@@ -27,7 +41,7 @@ namespace MirroredStageVariants.Patches
 
         static bool isMirrored(Camera camera)
         {
-            return StageMirrorController.CurrentlyIsMirrored && camera.GetComponent<MirrorCamera>();
+            return _disablePatchCount == 0 && MirrorCamera.IsMirrored(camera);
         }
 
         static Vector3 invertPixelCoordinateResult(ScreenCoordinateDelegate orig, Camera self, Vector3 position, Camera.MonoOrStereoscopicEye eye)
