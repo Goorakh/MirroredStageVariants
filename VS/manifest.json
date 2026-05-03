@@ -1,7 +1,7 @@
 ﻿{
 	"name": "MirroredStageVariants",
 	"author": "Gorakh",
-	"version_number": "1.2.5",
+	"version_number": "1.2.6",
 	"website_url": "https://github.com/Goorakh/MirroredStageVariants",
 	"description": "Adds more variety to stages by occasionaly mirroring them. Clientside.",
 	"dependencies": [

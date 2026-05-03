@@ -1,3 +1,8 @@
+**1.2.6 Changes:**
+
+* Switched to a more compatible input inversion when a stage is mirrored.
+	* Should work better with other mods that modify input, such as Wayfarer (Starstorm 2)
+
 **1.2.5 Changes:**
 
 * Updated for Alloyed Collective
